@@ -1,16 +1,16 @@
 package com.actiongroup.actionserver.models.events;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.chats.Chat;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 public class Event{
     
+    public Event(){}
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -29,6 +29,9 @@ public class Event{
     private boolean isPrivate;
 
     private boolean isHot; // горячая новость
+
+    @Column(columnDefinition = "geometry(Point,4326)")
+    private Point point;
     
 
     @OneToOne()

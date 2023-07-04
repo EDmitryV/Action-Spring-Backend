@@ -1,12 +1,8 @@
 package com.actiongroup.actionserver.models.archives.media;
 
-
-import com.actiongroup.actionserver.models.archives.Archive;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToOne;
 
 @MappedSuperclass
 public abstract class Media{
@@ -14,9 +10,18 @@ public abstract class Media{
     @Id
     @GeneratedValue
     private Long id;
-
     
-    private String url;
+    protected String url;
 
-    // public abstract Archive getArchive();
+    public Long getId(){
+        return id;
+    }
+
+    public String getUrl(){
+        return url;
+    }
+
+    public void setUrl(String url){
+        this.url = url;
+    }
 }
