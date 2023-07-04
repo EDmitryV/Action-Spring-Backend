@@ -1,4 +1,16 @@
 HELP.md
+
+/.idea
+
+
+.env
+.mvn
+mvnw
+mvnw.cmd
+out/
+
+
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
