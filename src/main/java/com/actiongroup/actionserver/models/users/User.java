@@ -38,5 +38,5 @@ public class User{
     @ManyToMany
     @JoinColumn(name = "blocked_user_id", referencedColumnName = "id")
     private Set<User> BlackList;
-
+    
 }
