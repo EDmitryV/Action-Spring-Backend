@@ -46,6 +46,7 @@ public class User{
     private Set<Chat> chats;
 
 
+
     public Long getId() {
         return id;
     }
@@ -113,4 +114,5 @@ public class User{
     public void setChats(Set<Chat> chats) {
         this.chats = chats;
     }
+
 }
