@@ -27,7 +27,7 @@ public class Chat{
 
     @ManyToMany()
     @JoinColumn(name="member_id", referencedColumnName = "id")
-    private Set<User> memers;
+    private Set<User> members;
 
 
 }

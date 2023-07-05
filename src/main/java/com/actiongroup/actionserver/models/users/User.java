@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.models.users;
 
+import com.actiongroup.actionserver.models.chats.Chat;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.time.LocalDate;
@@ -38,6 +39,13 @@ public class User{
     @ManyToMany
     @JoinColumn(name = "blocked_user_id", referencedColumnName = "id")
     private Set<User> BlackList;
+
+
+    @ManyToMany
+    @JoinColumn(name = "chat_id", referencedColumnName = "id")
+    private Set<Chat> chats;
+
+
 
     public Long getId() {
         return id;
@@ -98,4 +106,13 @@ public class User{
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Set<Chat> getChats() {
+        return chats;
+    }
+
+    public void setChats(Set<Chat> chats) {
+        this.chats = chats;
+    }
+
 }
