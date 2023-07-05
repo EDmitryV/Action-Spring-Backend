@@ -13,9 +13,6 @@ public class Statistics {
     @GeneratedValue
     private long id;
 
-    @OneToOne()
-    @JoinColumn(name="author_id", referencedColumnName = "id")
-    private User author;
 
 
     @OneToOne()
@@ -26,7 +23,44 @@ public class Statistics {
     private Float average;
 
     private Integer votersCount;
-    
+
+    private Integer visitorsCount;
+
+    public long getId() {
+        return id;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public Float getAverage() {
+        return average;
+    }
+
+    public void setAverage(Float average) {
+        this.average = average;
+    }
+
+    public Integer getVotersCount() {
+        return votersCount;
+    }
+
+    public void setVotersCount(Integer votersCount) {
+        this.votersCount = votersCount;
+    }
+
+    public Integer getVisitorsCount() {
+        return visitorsCount;
+    }
+
+    public void setVisitorsCount(Integer visitorsCount) {
+        this.visitorsCount = visitorsCount;
+    }
 }
 
 
