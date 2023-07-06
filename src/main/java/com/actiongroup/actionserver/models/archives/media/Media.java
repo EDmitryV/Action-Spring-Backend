@@ -3,7 +3,9 @@ package com.actiongroup.actionserver.models.archives.media;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Data;
 
+@Data
 @MappedSuperclass
 public abstract class Media{
     
@@ -12,16 +14,4 @@ public abstract class Media{
     private Long id;
     
     protected String url;
-
-    public Long getId(){
-        return id;
-    }
-
-    public String getUrl(){
-        return url;
-    }
-
-    public void setUrl(String url){
-        this.url = url;
-    }
 }

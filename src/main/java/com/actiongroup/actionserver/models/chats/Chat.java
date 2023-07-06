@@ -5,13 +5,14 @@ import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
 import java.util.Set;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Chat{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
 
     private String name;
 
@@ -19,15 +20,11 @@ public class Chat{
     @JoinColumn(name="image_id", referencedColumnName = "id")
     private Image icon;
 
-
     @OneToOne()
     @JoinColumn(name="event_id", referencedColumnName = "id")
     private Event event;
 
-
     @ManyToMany()
     @JoinColumn(name="member_id", referencedColumnName = "id")
     private Set<User> members;
-
-
 }

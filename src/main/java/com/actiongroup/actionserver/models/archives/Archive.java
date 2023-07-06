@@ -6,7 +6,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;
+import lombok.Data;
 
+@Data
 @MappedSuperclass
 public abstract class Archive {
 
@@ -19,25 +21,5 @@ public abstract class Archive {
     private User owner;
 
     private String name;
-    
-    
-    public Long getId() {
-        return id;
-    }
 
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
