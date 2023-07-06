@@ -2,7 +2,7 @@ package com.actiongroup.actionserver.services;
 
 import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
-import com.actiongroup.actionserver.repositories.EventRepository;
+import com.actiongroup.actionserver.repositories.events.EventRepository;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
