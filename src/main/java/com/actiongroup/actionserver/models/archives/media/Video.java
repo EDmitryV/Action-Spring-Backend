@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 
 import com.actiongroup.actionserver.models.archives.VideoArchive;
+import lombok.Data;
 
+@Data
 @Entity
 public class Video extends Media{
     public Video(){}
@@ -15,18 +17,4 @@ public class Video extends Media{
     private VideoArchive videoArchive;
     
     private Boolean autoRepeate;
-
-    public VideoArchive getVideoArchive(){
-        return videoArchive;
-    }
-    public void setVideoArchive(VideoArchive videoArchive){
-        this.videoArchive = videoArchive;
-    }
-
-    public Boolean getAutoRepeate(){
-        return autoRepeate;
-    }
-    public void setAutoRepeate(Boolean autoRepeate){
-        this.autoRepeate = autoRepeate;
-    }
 }

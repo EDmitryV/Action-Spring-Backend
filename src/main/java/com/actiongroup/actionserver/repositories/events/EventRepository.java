@@ -1,4 +1,4 @@
-package com.actiongroup.actionserver.repositories;
+package com.actiongroup.actionserver.repositories.events;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

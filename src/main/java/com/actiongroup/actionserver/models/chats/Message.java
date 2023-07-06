@@ -10,13 +10,12 @@ import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 
-
+@Data
 @Entity
 public class Message {
-    
-
     @Id
     @GeneratedValue
     private long id;

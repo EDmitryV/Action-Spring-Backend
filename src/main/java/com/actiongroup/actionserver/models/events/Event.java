@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.chats.Chat;
+import lombok.Data;
 import org.locationtech.jts.geom.Point;
 
+@Data
 @Entity
 public class Event{
     
@@ -41,13 +43,5 @@ public class Event{
     @OneToOne()
     @JoinColumn(name="chat_id", referencedColumnName = "id")
     private Chat chat;
-   
-    
-    public Long getId(){
-        return id;
-    }
 
-    public void setId(Long id){
-        this.id = id;
-    }
 }
