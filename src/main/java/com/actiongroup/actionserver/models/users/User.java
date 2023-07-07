@@ -19,16 +19,17 @@ public class User {
     private Long id;
     @Column(nullable = false, unique = true)
     private String username;
-    private String firstName;
-    private String lastName;
     @Column(nullable = false, unique = true)
     private String email;
+    private String firstName;
+    private String lastName;
     private String phoneNumber;
     private LocalDate birthDate;
+
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Set<Role> roles;
 
