@@ -6,6 +6,7 @@ import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.user.RoleRepository;
 import com.actiongroup.actionserver.repositories.user.UserRepository;
+import com.actiongroup.actionserver.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
 
     private final RoleRepository roleRepository;
@@ -52,12 +53,12 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody SignUpDto signUpDto){
 
         // checking for username exists in a database
-        if(userRepository.existsByUsername(signUpDto.getUsername())){
+        if(userService.existsByUsername(signUpDto.getUsername())){
             return new ResponseEntity<>("Username is already exist!", HttpStatus.BAD_REQUEST);
         }
 
         // checking for email exists in a database
-        if(userRepository.existsByEmail(signUpDto.getEmail())){
+        if(userService.existsByEmail(signUpDto.getEmail())){
             return new ResponseEntity<>("Email is already exist!", HttpStatus.BAD_REQUEST);
         }
 
@@ -70,7 +71,7 @@ public class AuthController {
         Role roles = roleRepository.findByName("ROLE_USER").get();
         user.setRoles(Collections.singleton(roles));
 
-        userRepository.save(user);
+        userService.save(user);
 
         return new ResponseEntity<>("User is registered successfully!", HttpStatus.OK);
 
