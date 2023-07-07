@@ -2,36 +2,40 @@ package com.actiongroup.actionserver.models.users;
 
 import com.actiongroup.actionserver.models.chats.Chat;
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Set;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "t_user")
-public class User{
-    public User() {}
+@Data
+@Table(name = "users")
+public class User {
+    public User() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    private String name;
-    private String surname;
-    private String patronymic;
+    @Column(nullable = false, unique = true)
+    private String username;
+    private String firstName;
+    private String lastName;
+    @Column(nullable = false, unique = true)
+    private String email;
     private String phoneNumber;
     private LocalDate birthDate;
-
-    
-    private String username;
+    @Column(nullable = false)
     private String password;
-    @Transient
-    private String passwordConfirm;
 
-
+    @ManyToMany
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Set<Role> roles;
 
     @ManyToMany
     @JoinColumn(name = "friend_id", referencedColumnName = "id")
     private Set<User> Friends;
-    
+
     @ManyToMany
     @JoinColumn(name = "subscription_id", referencedColumnName = "id")
     private Set<User> Subscriptions;

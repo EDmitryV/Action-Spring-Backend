@@ -1,23 +1,13 @@
-package com.actiongroup.actionserver.controllers;
+package com.actiongroup.actionserver.controllers.events;
 
-import com.actiongroup.actionserver.models.events.Event;
-import com.actiongroup.actionserver.services.EventService;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import com.actiongroup.actionserver.services.events.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/event")

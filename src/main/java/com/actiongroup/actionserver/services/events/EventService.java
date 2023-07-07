@@ -1,4 +1,4 @@
-package com.actiongroup.actionserver.services;
+package com.actiongroup.actionserver.services.events;
 
 import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
