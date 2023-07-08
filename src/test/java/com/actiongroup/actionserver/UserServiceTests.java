@@ -41,6 +41,7 @@ public  class UserServiceTests {
         }
     }
 
+
     @Order(2)
     @Test
     public void findByUsername(){
