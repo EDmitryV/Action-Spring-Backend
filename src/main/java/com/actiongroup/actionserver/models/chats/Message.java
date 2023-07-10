@@ -2,6 +2,7 @@ package com.actiongroup.actionserver.models.chats;
 
 import java.time.LocalDateTime;
 
+import com.actiongroup.actionserver.models.EntityWithStatus;
 import com.actiongroup.actionserver.models.archives.ImageArchive;
 import com.actiongroup.actionserver.models.archives.MusicArchive;
 import com.actiongroup.actionserver.models.archives.VideoArchive;
@@ -15,10 +16,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Message {
-    @Id
-    @GeneratedValue
-    private long id;
+public class Message extends EntityWithStatus {
 
     @ManyToOne()
     @JoinColumn(name="chat_id", referencedColumnName = "id")

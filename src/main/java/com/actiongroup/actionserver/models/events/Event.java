@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.models.events;
 
+import com.actiongroup.actionserver.models.EntityWithStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import com.actiongroup.actionserver.models.users.User;
@@ -9,13 +10,10 @@ import org.locationtech.jts.geom.Point;
 
 @Data
 @Entity
-public class Event{
+public class Event extends EntityWithStatus {
     
     public Event(){}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     
     private String type;
     
