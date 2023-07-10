@@ -1,22 +1,20 @@
 package com.actiongroup.actionserver.models.users;
 
+import com.actiongroup.actionserver.models.EntityWithStatus;
 import com.actiongroup.actionserver.models.chats.Chat;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Set;
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "users")
-public class User {
-    public User() {
-    }
+public class User extends EntityWithStatus {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false, unique = true)
