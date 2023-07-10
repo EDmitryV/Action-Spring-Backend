@@ -31,9 +31,7 @@ public class UserService implements UserDetailsService {
     public boolean save(User user) {
         User userFromDB = userRepo.findByUsername(user.getUsername());
 
-        if (userFromDB != null) {
-            return false;
-        }
+
 
         if(user.getRoles() == null || user.getRoles().size()==0){
             Role roles = roleRepo.findByName("ROLE_USER").get();
@@ -72,6 +70,10 @@ public class UserService implements UserDetailsService {
 
     public User findByEmail(String email){
         return userRepo.findByEmail(email);
+    }
+
+    public User findById(Long id){
+        return userRepo.findById(id).orElse(null);
     }
 
     public UserSettings getSettingsByUser(User user){
