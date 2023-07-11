@@ -42,8 +42,8 @@ public class UserController {
 
         if(userdto.getUsername() != null) user.setUsername(userdto.getUsername());
         if(userdto.getEmail() != null) user.setEmail(userdto.getEmail());
-        if(userdto.getFirstName() != null) user.setFirstName(userdto.getFirstName());
-        if(userdto.getLastName() != null) user.setLastName(userdto.getLastName());
+        if(userdto.getFirstName() != null) user.setFirstname(userdto.getFirstName());
+        if(userdto.getLastName() != null) user.setLastname(userdto.getLastName());
         if(userdto.getBirthDate() != null) user.setBirthDate(userdto.getBirthDate());
         if(userdto.getPhoneNumber() != null) user.setPhoneNumber(userdto.getPhoneNumber());
 

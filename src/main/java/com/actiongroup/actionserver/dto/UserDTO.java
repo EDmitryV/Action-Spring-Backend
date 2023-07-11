@@ -29,8 +29,8 @@ public class UserDTO extends ApiDto {
             dto.setId(user.getId());
             dto.setUsername(user.getUsername());
             dto.setEmail(user.getEmail());
-            dto.setFirstName(user.getFirstName());
-            dto.setLastName(user.getLastName());
+            dto.setFirstName(user.getFirstname());
+            dto.setLastName(user.getLastname());
             dto.setPhoneNumber(user.getPhoneNumber());
             dto.setBirthDate(user.getBirthDate());
         }
