@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.time.LocalDate;
 
@@ -31,20 +32,7 @@ public class User extends EntityWithStatus {
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Set<Role> roles;
 
-    @ManyToMany
-    @JoinColumn(name = "friend_id", referencedColumnName = "id")
-    private Set<User> Friends;
-
-    @ManyToMany
-    @JoinColumn(name = "subscription_id", referencedColumnName = "id")
-    private Set<User> Subscriptions;
-
-    @ManyToMany
-    @JoinColumn(name = "blocked_user_id", referencedColumnName = "id")
-    private Set<User> BlackList;
-
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats;
 }
