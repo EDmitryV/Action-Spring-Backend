@@ -32,9 +32,17 @@ public class TestDataLoader {
         Maria.setEmail("Maria@masha.com");
         Maria.setUsername("Maria-tyan");
 
+
+        User Artem = new User();
+        Artem.setBirthDate(LocalDate.parse("2005-01-12", formatter));
+        Artem.setPassword("dsdsddddd");
+        Artem.setEmail("arrrrt@em.com");
+        Artem.setUsername("artidodic");
+
         users.add(Egor);
         users.add(Sasha);
         users.add(Maria);
+        users.add(Artem);
 
         return users;
     }

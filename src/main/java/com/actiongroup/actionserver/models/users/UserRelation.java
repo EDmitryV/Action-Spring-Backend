@@ -10,9 +10,6 @@ import org.hibernate.annotations.OnDeleteAction;
 public class UserRelation {
 
     public enum RelationTypes{
-        FriendshipAccepted,
-        FriendshipDeclined,
-        FriendshipWaiting,
         Blocked,
         Subscription,
     }
