@@ -1,18 +1,11 @@
 package com.actiongroup.actionserver.services.users;
 
 
-import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
-import com.actiongroup.actionserver.repositories.user.RoleRepository;
-import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
-import com.actiongroup.actionserver.repositories.user.UserRepository;
-import com.actiongroup.actionserver.repositories.user.UserSettingsRepository;
+import com.actiongroup.actionserver.repositories.users.UserRepository;
+import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -20,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     @Autowired
     UserRepository userRepo;
     @Autowired
@@ -78,7 +71,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User findByEmail(String email){
-        return userRepo.findByEmail(email);
+        return userRepo.findByEmail(email).orElse(null);
     }
 
     public User findById(Long id){
@@ -89,18 +82,19 @@ public class UserService implements UserDetailsService {
         return settingsRepo.findByUser(user);
     }
 
-    @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not exists by Username");
-        }
 
-        Set<GrantedAuthority> authorities = user.getRoles().stream()
-                .map((role) -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toSet());
-
-        return new org.springframework.security.core.userdetails.User(username, user.getPassword(), authorities);
-    }
+//    @Override
+//    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User user = userRepo.findByUsername(username);
+//        if (user == null) {
+//            throw new UsernameNotFoundException("User not exists by Username");
+//        }
+//
+//        Set<GrantedAuthority> authorities = user.ge().stream()
+//                .map((role) -> new SimpleGrantedAuthority(role.getName()))
+//                .collect(Collectors.toSet());
+//
+//        return new org.springframework.security.core.userdetails.User(username, user.getPassword(), authorities);
+//    }
 
 }
