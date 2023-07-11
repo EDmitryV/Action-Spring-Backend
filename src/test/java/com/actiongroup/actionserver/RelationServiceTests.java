@@ -3,7 +3,7 @@ package com.actiongroup.actionserver;
 import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserRelation;
-import com.actiongroup.actionserver.repositories.user.RoleRepository;
+import com.actiongroup.actionserver.repositories.users.RoleRepository;
 import com.actiongroup.actionserver.services.users.RelationshipService;
 import com.actiongroup.actionserver.services.users.UserService;
 

@@ -3,7 +3,7 @@ package com.actiongroup.actionserver.services.users;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserRelation;
 import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
-import com.actiongroup.actionserver.repositories.user.UserRepository;
+import com.actiongroup.actionserver.repositories.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

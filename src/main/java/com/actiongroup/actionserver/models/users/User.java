@@ -44,11 +44,13 @@ public class User extends EntityWithStatus implements UserDetails{
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats;
 
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
-//TODO make it work normal
+    //TODO make it work normal
     @Override
     public boolean isAccountNonExpired() {
         return true;

@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
 @RestController
 @RequestMapping(value = "/users")
 @Tag(name = "Users API")
@@ -44,8 +42,8 @@ public class UserController {
 
         if(userdto.getUsername() != null) user.setUsername(userdto.getUsername());
         if(userdto.getEmail() != null) user.setEmail(userdto.getEmail());
-        if(userdto.getFirstName() != null) user.setFirstName(userdto.getFirstName());
-        if(userdto.getLastName() != null) user.setLastName(userdto.getLastName());
+        if(userdto.getFirstname() != null) user.setFirstname(userdto.getFirstname());
+        if(userdto.getLastname() != null) user.setLastname(userdto.getLastname());
         if(userdto.getBirthDate() != null) user.setBirthDate(userdto.getBirthDate());
         if(userdto.getPhoneNumber() != null) user.setPhoneNumber(userdto.getPhoneNumber());
 
