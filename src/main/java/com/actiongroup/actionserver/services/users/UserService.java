@@ -1,50 +1,49 @@
 package com.actiongroup.actionserver.services.users;
 
 
-import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
-import com.actiongroup.actionserver.repositories.user.RoleRepository;
-import com.actiongroup.actionserver.repositories.user.UserRepository;
-import com.actiongroup.actionserver.repositories.user.UserSettingsRepository;
+import com.actiongroup.actionserver.repositories.users.RoleRepository;
+import com.actiongroup.actionserver.repositories.users.UserRepository;
+import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     @Autowired
     UserRepository userRepo;
-    @Autowired
-    RoleRepository roleRepo;
+    //@Autowired
+    //RoleRepository roleRepo;
 
     @Autowired
     UserSettingsRepository settingsRepo;
+    @Autowired
+    UserRelationRepository relationRepository;
 
-    public boolean save(User user) {
-        User userFromDB = userRepo.findByUsername(user.getUsername());
+    public User save(User user) {
+        if(userRepo.existsByUsername(user.getUsername())) return null;
+
+        //User userFromDB = userRepo.findByUsername(user.getUsername());
+//        if(user.getRoles() == null || user.getRoles().size()==0){
+//            Role roles = roleRepo.findByName("ROLE_USER").get();
+//            user.setRoles(Collections.singleton(roles));
+//        }
 
 
+        User saveduser = userRepo.save(user);
 
-        if(user.getRoles() == null || user.getRoles().size()==0){
-            Role roles = roleRepo.findByName("ROLE_USER").get();
-            user.setRoles(Collections.singleton(roles));
-        }
-        UserSettings settings = new UserSettings();
+        UserSettings settings = settingsRepo.findByUser(user);
+        if(settings == null)
+            settings = new UserSettings();
         settings.setVerified(false);
         settings.setUser(user);
 
-
-        userRepo.save(user);
         settingsRepo.save(settings);
-        return true;
+        return saveduser;
     }
 
     public boolean existsByUsername(String username){
@@ -57,7 +56,10 @@ public class UserService implements UserDetailsService {
 
     public void deleteUser(User user){
         deleteUserSettings(settingsRepo.findByUser(user));
-        userRepo.deleteById(user.getId());
+        relationRepository.deleteAll(relationRepository.findBySourceUserOrTargetUser(user,user));
+        if(user!=null)
+            userRepo.deleteById(user.getId());
+
     }
 
     private void deleteUserSettings(UserSettings settings){
@@ -68,7 +70,7 @@ public class UserService implements UserDetailsService {
         return userRepo.findByUsername(username);
     }
 
-    public User findByEmail(String email){
+    public Optional<User> findByEmail(String email){
         return userRepo.findByEmail(email);
     }
 
@@ -79,20 +81,4 @@ public class UserService implements UserDetailsService {
     public UserSettings getSettingsByUser(User user){
         return settingsRepo.findByUser(user);
     }
-
-
-    @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not exists by Username");
-        }
-
-        Set<GrantedAuthority> authorities = user.getRoles().stream()
-                .map((role) -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toSet());
-
-        return new org.springframework.security.core.userdetails.User(username, user.getPassword(), authorities);
-    }
-
 }

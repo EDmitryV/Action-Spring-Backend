@@ -1,4 +1,4 @@
-package com.actiongroup.actionserver.repositories.user;
+package com.actiongroup.actionserver.repositories.users;
 
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
