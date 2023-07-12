@@ -68,6 +68,12 @@ public class RelationshipService {
         subs.forEach(userRelation -> result.add(userRelation.getTargetUser()));
         return result;
     }
+    public Set<User> getSubscribers(User user){
+        Set<User> result = new HashSet<>();
+        List<UserRelation> subs = findByTargetUserAndRelationType(user, UserRelation.RelationTypes.Subscription);
+        subs.forEach(userRelation -> result.add(userRelation.getTargetUser()));
+        return result;
+    }
 
     public Set<User> getFriends(User user){
         Set<User> result = new HashSet<>();
