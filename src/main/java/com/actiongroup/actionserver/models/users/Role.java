@@ -1,6 +1,5 @@
 package com.actiongroup.actionserver.models.users;
 
-import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

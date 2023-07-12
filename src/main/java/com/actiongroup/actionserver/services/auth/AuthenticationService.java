@@ -17,6 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -26,7 +30,22 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationFailureResponse getErrorsMessageRegister(RegisterRequest request) {
+        List<String> errors = new ArrayList<>();
+        if (userService.findByEmail(request.getEmail()) != null) {
+            errors.add("User with same email already exists.");
+        }
+        if (userService.findByUsername(request.getUsername()) != null) {
+            errors.add("User with same username already exists.");
+        }
+        if (errors.size() > 0) {
+            return AuthenticationFailureResponse.builder().errorMessage(String.join(" ", errors)).build();
+        }
+        return null;
+    }
+
+    public AuthenticationSuccessResponse register(RegisterRequest request) {
+
         var user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -37,26 +56,26 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder()
+        return AuthenticationSuccessResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationSuccessResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
-        var user = userService.findByEmail(request.getEmail())
-                .orElseThrow();
+
+        var user = userService.findByEmail(request.getEmail());
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        return AuthenticationResponse.builder()
+        return AuthenticationSuccessResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -97,13 +116,12 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
-            var user = this.userService.findByEmail(userEmail)
-                    .orElseThrow();
+            var user = userService.findByEmail(userEmail);
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
+                var authResponse = AuthenticationSuccessResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();

@@ -40,6 +40,7 @@ public class User extends EntityWithStatus implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats;
@@ -51,6 +52,21 @@ public class User extends EntityWithStatus implements UserDetails{
         return role.getAuthorities();
     }
     //TODO make it work normal
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.getAuthorities();
+    }
+//TODO make it work normal
     @Override
     public boolean isAccountNonExpired() {
         return true;

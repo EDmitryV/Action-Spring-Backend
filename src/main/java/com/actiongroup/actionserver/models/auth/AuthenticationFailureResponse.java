@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.models.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class AuthenticationFailureResponse {
 
-  private String email;
-  private String password;
-
+    @JsonProperty("error")
+    private String errorMessage;
 }
