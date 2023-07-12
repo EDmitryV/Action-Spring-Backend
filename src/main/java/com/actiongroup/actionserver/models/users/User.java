@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.time.LocalDate;
 
@@ -39,22 +40,27 @@ public class User extends EntityWithStatus implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
-    @JoinColumn(name = "friend_id", referencedColumnName = "id")
-    private Set<User> Friends;
 
-    @ManyToMany
-    @JoinColumn(name = "subscription_id", referencedColumnName = "id")
-    private Set<User> Subscriptions;
-
-    @ManyToMany
-    @JoinColumn(name = "blocked_user_id", referencedColumnName = "id")
-    private Set<User> BlackList;
-
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats;
+
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.getAuthorities();
+    }
+    //TODO make it work normal
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,26 +1,29 @@
 package com.actiongroup.actionserver.services.users;
 
 
-import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
 import com.actiongroup.actionserver.repositories.users.UserRepository;
 import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
 public class UserService {
-    @Autowired
-    UserRepository userRepo;
+    private final UserRepository userRepo;
+    private final UserSettingsRepository settingsRepo;
+    private final UserRelationRepository relationRepository;
 
-    @Autowired
-    UserSettingsRepository settingsRepo;
+    public User save(User user) {
+        if(userRepo.existsByUsername(user.getUsername())) return null;
 
     public User save(User user) {
         User userFromDB = userRepo.findByUsername(user.getUsername());
@@ -31,7 +34,9 @@ public class UserService {
         if(user.getRole() == null){
             user.setRole(Role.USER);
         }
-        UserSettings settings = new UserSettings();
+        UserSettings settings = settingsRepo.findByUser(user);
+        if(settings == null)
+            settings = new UserSettings();
         settings.setVerified(false);
         settings.setUser(user);
 
@@ -39,6 +44,7 @@ public class UserService {
         User savedUser = userRepo.save(user);
         settingsRepo.save(settings);
         return savedUser;
+
     }
 
     public boolean existsByUsername(String username){
@@ -51,7 +57,10 @@ public class UserService {
 
     public void deleteUser(User user){
         deleteUserSettings(settingsRepo.findByUser(user));
-        userRepo.deleteById(user.getId());
+        relationRepository.deleteAll(relationRepository.findBySourceUserOrTargetUser(user,user));
+        if(user!=null)
+            userRepo.deleteById(user.getId());
+
     }
 
     private void deleteUserSettings(UserSettings settings){
@@ -62,15 +71,15 @@ public class UserService {
         return userRepo.findByUsername(username);
     }
 
+
     public User findByEmail(String email){
         return userRepo.findByEmail(email).orElse(null);
+
+    public User findById(Long id){
+        return userRepo.findById(id).orElse(null);
     }
 
     public UserSettings getSettingsByUser(User user){
         return settingsRepo.findByUser(user);
-    }
-
-    public User findById (long id){
-        return userRepo.findById(id).orElse(null);
     }
 }

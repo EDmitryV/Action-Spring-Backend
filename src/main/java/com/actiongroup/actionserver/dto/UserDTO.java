@@ -2,7 +2,6 @@ package com.actiongroup.actionserver.dto;
 
 import com.actiongroup.actionserver.models.users.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +15,8 @@ public class UserDTO extends ApiDto {
     private long id;
     private String username;
     private String email;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String phoneNumber;
     private LocalDate birthDate;
 
@@ -29,8 +28,8 @@ public class UserDTO extends ApiDto {
             dto.setId(user.getId());
             dto.setUsername(user.getUsername());
             dto.setEmail(user.getEmail());
-            dto.setFirstName(user.getFirstname());
-            dto.setLastName(user.getLastname());
+            dto.setFirstname(user.getFirstname());
+            dto.setLastname(user.getLastname());
             dto.setPhoneNumber(user.getPhoneNumber());
             dto.setBirthDate(user.getBirthDate());
         }

@@ -3,6 +3,7 @@ package com.actiongroup.actionserver.services.auth;
 import com.actiongroup.actionserver.models.auth.*;
 import com.actiongroup.actionserver.repositories.auth.TokenRepository;
 import com.actiongroup.actionserver.models.users.User;
+import com.actiongroup.actionserver.repositories.users.UserRepository;
 import com.actiongroup.actionserver.services.users.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationSuccessResponse register(RegisterRequest request) {
+
         var user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -65,6 +69,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
+
         var user = userService.findByEmail(request.getEmail());
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);

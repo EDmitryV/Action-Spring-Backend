@@ -5,6 +5,7 @@ import com.actiongroup.actionserver.dto.ResponseWithDTO;
 import com.actiongroup.actionserver.dto.UserDTO;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.users.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -32,6 +31,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "user successfully edited"),
             @ApiResponse(responseCode = "400", description = "User was not found or cannot apply changes")
     })
+    @Operation(summary = "Edit user by id", description = "Обновляет выбранные поля у пользоваетля")
     public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserDTO userdto){
 
         User user = userService.findById(userdto.getId());
@@ -42,8 +42,10 @@ public class UserController {
 
         if(userdto.getUsername() != null) user.setUsername(userdto.getUsername());
         if(userdto.getEmail() != null) user.setEmail(userdto.getEmail());
-        if(userdto.getFirstName() != null) user.setFirstname(userdto.getFirstName());
-        if(userdto.getLastName() != null) user.setLastname(userdto.getLastName());
+
+        if(userdto.getFirstname() != null) user.setFirstname(userdto.getFirstname());
+        if(userdto.getLastname() != null) user.setLastname(userdto.getLastname());
+
         if(userdto.getBirthDate() != null) user.setBirthDate(userdto.getBirthDate());
         if(userdto.getPhoneNumber() != null) user.setPhoneNumber(userdto.getPhoneNumber());
 
@@ -58,6 +60,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "user successfully found"),
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
+    @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
     public ResponseEntity<ResponseWithDTO> getUser(@PathVariable Long id){
         User user = userService.findById(id);
         if(user == null)
@@ -65,4 +68,14 @@ public class UserController {
 
         return new ResponseEntity<>(ResponseWithDTO.create(UserDTO.toDTO(user), "user successfully found"),HttpStatus.OK);
     }
+
+
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "Delete user by id", description = "Удаляет пользователя по его ID")
+    public ResponseEntity<ResponseWithDTO> deleteUser(@PathVariable Long id){
+        User user = userService.findById(id);
+        userService.deleteUser(user);
+        return new ResponseEntity<>(ResponseWithDTO.create(null, "user deleted found"),HttpStatus.OK);
+    }
+
 }
