@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends EntityWithStatus implements UserDetails{
+public class User extends EntityWithStatus implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -34,39 +34,24 @@ public class User extends EntityWithStatus implements UserDetails{
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
     private List<Token> tokens;
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
+    private UserSettings settings;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
-    private Set<Chat> chats;
-
+    private Set<Chat> chats = new HashSet<>();
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
+
     //TODO make it work normal
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
-    }
-//TODO make it work normal
     @Override
     public boolean isAccountNonExpired() {
         return true;
