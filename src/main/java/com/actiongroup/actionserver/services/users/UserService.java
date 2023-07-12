@@ -4,6 +4,9 @@ package com.actiongroup.actionserver.services.users;
 import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
+import com.actiongroup.actionserver.repositories.users.RoleRepository;
+import com.actiongroup.actionserver.repositories.users.UserRepository;
+import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import com.actiongroup.actionserver.repositories.users.UserRepository;
 import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +27,9 @@ public class UserService {
     private final UserSettingsRepository settingsRepo;
     private final UserRelationRepository relationRepository;
 
+
     public User save(User user) {
-      //TODO check that another user with same email can save in db
+        //TODO check that another user with same email can save in db
         if(user.getRole() == null){
             user.setRole(Role.USER);
         }
@@ -48,6 +52,7 @@ public class UserService {
     }
 
     public void deleteUser(User user){
+        //deleteUserSettings(settingsRepo.findByUser(user).orElse(null));
         relationRepository.deleteAll(relationRepository.findBySourceUserOrTargetUser(user,user));
         if(user!=null)
             userRepo.deleteById(user.getId());
@@ -62,10 +67,10 @@ public class UserService {
         return userRepo.findByUsername(username);
     }
 
-
-    public User findByEmail(String email) {
+    public User findByEmail(String email){
         return userRepo.findByEmail(email).orElse(null);
     }
+
     public User findById(Long id){
         return userRepo.findById(id).orElse(null);
     }

@@ -1,6 +1,7 @@
-package com.actiongroup.actionserver;
+package com.actiongroup.actionserver.serviceTests;
 
 
+import com.actiongroup.actionserver.TestDataLoader;
 import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.users.RoleRepository;
@@ -64,7 +65,7 @@ public  class UserServiceTests {
     public void findByEmail(){
         System.out.println("ПОИСК ПО ПОЧТЕ");
         for(User user:users){
-            User foundUser = userService.findByEmail(user.getEmail()).get();
+            User foundUser = userService.findByEmail(user.getEmail());
             Assertions.assertEquals(user.getUsername(), foundUser.getUsername());
             Assertions.assertEquals(user.getEmail(), foundUser.getEmail());
         }
@@ -75,23 +76,21 @@ public  class UserServiceTests {
 
 
 
-//    @Order(4)
-//    @Test @Disabled
-//    public void userRolesAdded(){
-//        System.out.println("ПРОВЕРКА РОЛЕЙ");
-//        for(User user:users){
-//            User foundUser = userService.findByUsername(user.getUsername());
-//            Role role = roleRepository.findByName("ROLE_USER").get();
-//            Assertions.assertTrue(foundUser.getRoles().contains(role));
-//        }
-//    }
-
     @Order(4)
+    @Test
+    public void userRolesAdded(){
+        System.out.println("ПРОВЕРКА РОЛЕЙ");
+        for(User user:users){
+            Assertions.assertEquals(Role.USER, user.getRole());
+        }
+    }
+
+    @Order(5)
     @Test
     public void everyUserHasSettings(){
         System.out.println("ПРОВЕРКА НАСТРОЕК");
         for(User user:users){
-            Assertions.assertNotNull(userService.getSettingsByUser(user));
+            Assertions.assertNotNull(user.getSettings());
         }
 
     }

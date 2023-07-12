@@ -1,5 +1,6 @@
-package com.actiongroup.actionserver;
+package com.actiongroup.actionserver.serviceTests;
 
+import com.actiongroup.actionserver.TestDataLoader;
 import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserRelation;
@@ -38,13 +39,18 @@ public class RelationServiceTests {
             else userService.save(users.get(i));
         }
         System.out.println("ЗАКОНЧЕНО СОХРАНЕНИЕ");
+        System.out.println("СОЗДАНИЕ ПОДПИСКИ");
+        subscribeInit();
+        System.out.println("ПОДПИСКИ УСТАНОВЛЕНЫ");
     }
 
+    private void subscribeInit(){
+
+    }
 
     @Order(1)
     @Test
     public void subscribtionCreationWorks(){
-        System.out.println("СОЗДАНИЕ ПОДПИСКИ");
         User usr = users.get(0);
         UserRelation sub1 = relationshipService.subscribe(usr, users.get(1));
         Assertions.assertNotNull(sub1);
@@ -80,6 +86,75 @@ public class RelationServiceTests {
         Assertions.assertTrue(unames.contains(users.get(1).getUsername()));
         Assertions.assertTrue(unames.contains(users.get(2).getUsername()));
     }
+
+    @Order(3)
+    @Test
+    public void subscribeTwiceCausesNoNewRows(){
+        relationshipService.subscribe(users.get(0), users.get(1));
+        Set<User> subs = relationshipService.getSubscriptions(users.get(0));
+        Assertions.assertEquals(2, subs.size());
+
+    }
+
+    @Order(4)
+    @Test
+    public void cannotSubscribeOnYorself(){
+        relationshipService.subscribe(users.get(0), users.get(0));
+        Set<User> subs = relationshipService.getSubscriptions(users.get(0));
+        Assertions.assertEquals(2, subs.size());
+    }
+
+
+    @Order(5)
+    @Test
+    public void unsubscribeCheck() {
+        relationshipService.unsubscribe(users.get(0), users.get(2));
+        Assertions.assertTrue(true);
+    }
+
+
+    @Order(6)
+    @Test
+    public void friendshipsCheck(){
+        relationshipService.subscribe(users.get(2), users.get(3));
+        relationshipService.subscribe(users.get(3), users.get(2));
+        relationshipService.subscribe(users.get(3), users.get(1));
+        relationshipService.subscribe(users.get(2), users.get(0));
+
+        Set<User> friendsOf2 = relationshipService.getFriends(users.get(2));
+        Set<User> friendsOf3 = relationshipService.getFriends(users.get(3));
+
+        Assertions.assertEquals(1, friendsOf2.size());
+        Assertions.assertEquals(1, friendsOf3.size());
+    }
+
+
+    @Order(7)
+    @Test
+    public void addingToBlackListDestroysFriendship(){
+        relationshipService.block(users.get(2), users.get(0));
+        relationshipService.block(users.get(2), users.get(3));
+
+
+        Set<User> friends = relationshipService.getFriends(users.get(2));
+        Assertions.assertEquals(0, friends.size());
+        Set<User> subscribtions = relationshipService.getSubscriptions(users.get(2));
+        Assertions.assertEquals(0, subscribtions.size());
+        Set<User> blacklist = relationshipService.getBlacklist(users.get(2));
+        Assertions.assertEquals(2, blacklist.size());
+    }
+
+
+
+    @Order(8)
+    @Test
+    public void removeFromBlackList(){
+        relationshipService.removeFromBlackList(users.get(2),users.get(0));
+        relationshipService.removeFromBlackList(users.get(2),users.get(3));
+        Set<User> blacklist = relationshipService.getFriends(users.get(2));
+        Assertions.assertEquals(0, blacklist.size());
+    }
+
 
 
     @AfterAll

@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver;
 
+import com.actiongroup.actionserver.models.events.Tag;
 import com.actiongroup.actionserver.models.users.User;
 
 import java.time.LocalDate;
@@ -32,10 +33,72 @@ public class TestDataLoader {
         Maria.setEmail("Maria@masha.com");
         Maria.setUsername("Maria-tyan");
 
+
+        User Artem = new User();
+        Artem.setBirthDate(LocalDate.parse("2005-01-12", formatter));
+        Artem.setPassword("dsdsddddd");
+        Artem.setEmail("arrrrt@em.com");
+        Artem.setUsername("artidodic");
+
         users.add(Egor);
         users.add(Sasha);
         users.add(Maria);
+        users.add(Artem);
 
         return users;
+    }
+
+    public static List<Tag> createTagTree(){
+        Tag sport = new Tag();
+        sport.setName("спорт");
+        //--------SPORTS----------------
+        Tag water = new Tag();
+        water.setName("водный");
+        water.setParentTag(sport);
+
+        Tag air = new Tag();
+        air.setName("воздушный");
+        air.setParentTag(sport);
+
+        Tag ice = new Tag();
+        ice.setName("зимний");
+        ice.setParentTag(sport);
+
+        //-----ICE SPORTS------------------
+
+        Tag hockey = new Tag();
+        hockey.setName("хоккей");
+        hockey.setParentTag(ice);
+
+        Tag biathlon = new Tag();
+        biathlon.setName("биатлон");
+        biathlon.setParentTag(ice);
+
+        Tag figureSkating = new Tag();
+        figureSkating.setName("фигурное катание");
+        figureSkating.setParentTag(ice);
+        //-------AIR SPORTS--------------------
+        Tag parachuting = new Tag();
+        parachuting.setName("парашютирование");
+        parachuting.setParentTag(air);
+
+        //--------WATER SPORTS---------------------
+        Tag swimming = new Tag();
+        swimming.setName("павание");
+        swimming.setParentTag(water);
+
+        Tag polo = new Tag();
+        polo.setName("водное поло");
+        polo.setParentTag(water);
+
+        List<Tag> childrenTags = new ArrayList<>();
+        childrenTags.add(polo);
+        childrenTags.add(swimming);
+        childrenTags.add(parachuting);
+        childrenTags.add(figureSkating);
+        childrenTags.add(biathlon);
+        childrenTags.add(hockey);
+
+        return childrenTags;
     }
 }

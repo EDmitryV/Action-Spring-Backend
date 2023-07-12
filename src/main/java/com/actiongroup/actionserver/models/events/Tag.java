@@ -1,11 +1,12 @@
 package com.actiongroup.actionserver.models.events;
 
+import com.actiongroup.actionserver.dto.ApiDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class Tag {
+public class Tag implements ApiDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,11 +16,15 @@ public class Tag {
 
     private boolean isDeprecated;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name="parent_tag_id", referencedColumnName = "id")
     private Tag parentTag;
 
-    private String iconNumber;
+    @Enumerated(EnumType.STRING)
+    private Icon icon;
 
-    private String iconTheme;
+
+    enum Icon{
+        None
+    }
 }
