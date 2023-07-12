@@ -5,5 +5,4 @@ import com.actiongroup.actionserver.models.users.UserSettings;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserSettingsRepository extends JpaRepository<UserSettings, Long> {
-    UserSettings findByUser(User user);
 }

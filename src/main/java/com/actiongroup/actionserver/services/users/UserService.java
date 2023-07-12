@@ -6,34 +6,33 @@ import com.actiongroup.actionserver.models.users.UserSettings;
 import com.actiongroup.actionserver.repositories.users.RoleRepository;
 import com.actiongroup.actionserver.repositories.users.UserRepository;
 import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
+import com.actiongroup.actionserver.repositories.users.UserRepository;
+import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
 
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
 public class UserService {
-    @Autowired
-    UserRepository userRepo;
-    //@Autowired
-    //RoleRepository roleRepo;
+    private final UserRepository userRepo;
+    private final UserSettingsRepository settingsRepo;
+    private final UserRelationRepository relationRepository;
 
-    @Autowired
-    UserSettingsRepository settingsRepo;
-    @Autowired
-    UserRelationRepository relationRepository;
 
     public User save(User user) {
+        //TODO check that another user with same email can save in db
         if(userRepo.existsByUsername(user.getUsername())) return null;
-
-        //User userFromDB = userRepo.findByUsername(user.getUsername());
-//        if(user.getRoles() == null || user.getRoles().size()==0){
-//            Role roles = roleRepo.findByName("ROLE_USER").get();
-//            user.setRoles(Collections.singleton(roles));
-//        }
-
-
+        if(user.getRole() == null){
+            user.setRole(Role.USER);
+        }
         User saveduser = userRepo.save(user);
 
         UserSettings settings = settingsRepo.findByUser(user);
