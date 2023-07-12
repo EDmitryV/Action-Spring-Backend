@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Component
 @Getter
 @Setter
-public class UserDTO extends ApiDto {
+public class UserDTO implements ApiDto {
 
     private long id;
     private String username;
