@@ -1,6 +1,7 @@
-package com.actiongroup.actionserver;
+package com.actiongroup.actionserver.serviceTests;
 
 
+import com.actiongroup.actionserver.TestDataLoader;
 import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.users.RoleRepository;
