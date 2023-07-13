@@ -1,12 +1,18 @@
 package com.actiongroup.actionserver;
 
+import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.events.Tag;
 import com.actiongroup.actionserver.models.users.User;
+import com.actiongroup.actionserver.services.users.UserService;
+import org.locationtech.jts.geom.Point;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class TestDataLoader {
     public static List<User> createUsers(){
@@ -100,5 +106,30 @@ public class TestDataLoader {
         childrenTags.add(hockey);
 
         return childrenTags;
+    }
+
+
+    public static List<Event> createEvents(){
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        Event ev1 = new Event();
+        ev1.setName("Встреча ребяток");
+        ev1.setStartsAt(LocalDateTime.parse("2023-07-20 13:00:00", formatter));
+
+        Event ev2 = new Event();
+        ev2.setName("Аниме конвент");
+        ev2.setStartsAt(LocalDateTime.parse("2023-11-01 09:00:00", formatter));
+
+        Event ev3 = new Event();
+        ev3.setName("Сходка попещиков anime down 69");
+        ev3.setStartsAt(LocalDateTime.parse("2023-10-05 08:30:00", formatter));
+
+        Event ev4 = new Event();
+        ev4.setName("Встреча для похода за пивом");
+        ev4.setStartsAt(LocalDateTime.parse("2023-07-20 16:50:00", formatter));
+
+
+        return new ArrayList<>(List.of(ev1, ev2, ev3, ev4));
     }
 }

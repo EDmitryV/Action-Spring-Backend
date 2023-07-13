@@ -4,6 +4,7 @@ import com.actiongroup.actionserver.models.users.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,13 +21,21 @@ public class EventPath {
     private User author;
 
 
-    @ManyToMany
-    @JoinColumn(name = "event_id",referencedColumnName = "id")
-    private List<Event> events;
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "checkpoint_id",referencedColumnName = "id")
+//    private List<PathCheckpoint> checkpoints;
 
     @ManyToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private Set<User> users;
     private boolean publicEditable;
+
+
+    public PathCheckpoint eventToCheckpoint(Event event){
+        PathCheckpoint checkpoint = new PathCheckpoint();
+        checkpoint.setEvent(event);
+        checkpoint.setParentPath(this);
+        return checkpoint;
+    };
 
 }
