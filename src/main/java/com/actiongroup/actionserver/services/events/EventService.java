@@ -21,11 +21,14 @@ public class EventService {
     private final StatisticsRepository statisticsRepository;
     private final TagRepository tagRepository;
 
+    private final EventPathService eventPathService;
+
     @Autowired
-    public EventService(EventRepository eventRepository, StatisticsRepository statisticsRepository, TagRepository tagRepository){
+    public EventService(EventRepository eventRepository, StatisticsRepository statisticsRepository, TagRepository tagRepository, EventPathService eventPathService){
         this.eventRepository = eventRepository;
         this.statisticsRepository = statisticsRepository;
         this.tagRepository = tagRepository;
+        this.eventPathService = eventPathService;
     }
 
     public List<Event> getEventsOnMap(Point startPosition, Point endPosition, String dateTimeFilter, Boolean fromMe, Boolean fromSubscriptions, Boolean fromFriends, String[] filterCategories, User user){
@@ -46,7 +49,7 @@ public class EventService {
         return eventRepository.findEventsOnMap(startPosition.getX(), startPosition.getY(), endPosition.getX(), endPosition.getY());
     }
 
-    public boolean save(Event event){
+    public Event saveEvent(Event event){
         // TODO разобараться с репозиторием и как искать (если существует -> return false)
 //        User userFromDB = eventRepository.findBy....................();
 //
@@ -60,13 +63,18 @@ public class EventService {
         eventStat.setVisitorsCount(0);
         eventStat.setEvent(event);
 
-        eventRepository.save(event);
+        Event ev = eventRepository.save(event);
         statisticsRepository.save(eventStat);
-        return true;
+        return ev;
+    }
+
+    public Event findEventById(Long id){
+        return eventRepository.findById(id).orElse(null);
     }
 
     public void deleteEvent(Event event){
         deleteStatistics(statisticsRepository.findByEvent(event));
+        eventPathService.deleteCheckpointsByEvent(event);
         eventRepository.deleteById(event.getId());
     }
 
