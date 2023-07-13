@@ -72,7 +72,7 @@ public class EventPathTests {
     @Order(3)
     @Test
     public void addToEndWorks(){
-        eventPathService.addCheckpointToPath(path.eventToCheckpoint(events.get(2)), path);
+        eventPathService.addEventToPath(events.get(2), path);
 
         List<Event> eventssss = eventPathService.getEventsInPath(path);
         Assertions.assertNotNull(eventssss);
@@ -85,7 +85,7 @@ public class EventPathTests {
     @Order(4)
     @Test
     public void addToCenterWorks(){
-        eventPathService.addCheckpointToPath(path.eventToCheckpoint(events.get(3)), 1 ,path);
+        eventPathService.addEventToPath(events.get(3), 1 ,path);
 
         List<Event> eventssss = eventPathService.getEventsInPath(path);
         Assertions.assertNotNull(eventssss);
@@ -145,8 +145,8 @@ public class EventPathTests {
     private void initPath(){
         System.out.println("СОЗДАНИЕ ПУТЕЙ");
         path = eventPathService.saveEventPath(new EventPath());
-        eventPathService.addCheckpointToPath(path.eventToCheckpoint(events.get(0)), path);
-        eventPathService.addCheckpointToPath(path.eventToCheckpoint(events.get(1)), path);
+        eventPathService.addEventToPath(events.get(0), path);
+        eventPathService.addEventToPath(events.get(1), path);
     }
 
     private void clearPath(){

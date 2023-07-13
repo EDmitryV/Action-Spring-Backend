@@ -27,7 +27,17 @@ public class EventPathService {
         return eventPathRepository.save(path);
     }
 
-    public PathCheckpoint addCheckpointToPath(PathCheckpoint checkpoint, Integer index, EventPath targetPath){
+    public PathCheckpoint addEventToPath(Event event, Integer index, EventPath targetPath){
+        PathCheckpoint checkpoint = targetPath.eventToCheckpoint(event);
+        return addCheckpointToPath(checkpoint, index,targetPath);
+    }
+    public PathCheckpoint addEventToPath(Event event, EventPath targetPath){
+        PathCheckpoint checkpoint = targetPath.eventToCheckpoint(event);
+        return addCheckpointToPath(checkpoint,targetPath);
+    }
+
+
+    private PathCheckpoint addCheckpointToPath(PathCheckpoint checkpoint, Integer index, EventPath targetPath){
         List<PathCheckpoint> checkpoints = findCheckpointsByEventPath(targetPath);
         if(index > checkpoints.size() || index < 0) return null;
         if(index == checkpoints.size()){
@@ -45,7 +55,7 @@ public class EventPathService {
         }
         return checkpoints.get(index);
     }
-    public PathCheckpoint addCheckpointToPath(PathCheckpoint checkpoint, EventPath targetPath){
+    private PathCheckpoint addCheckpointToPath(PathCheckpoint checkpoint, EventPath targetPath){
         List<PathCheckpoint> checkpoints = findCheckpointsByEventPath(targetPath);
         if(checkpoints == null) checkpoints = new ArrayList<>();
 
