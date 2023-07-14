@@ -24,9 +24,12 @@ public class UserController {
 
     private UserService userService;
 
+    private DTOFactory dtoFactory;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DTOFactory dtoFactory) {
         this.userService = userService;
+        this.dtoFactory = dtoFactory;
     }
 
     @PatchMapping("/edit")
@@ -56,7 +59,7 @@ public class UserController {
 
         return new ResponseEntity<>(
                 ResponseWithDTO.create(
-                        DTOFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
+                        dtoFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
                         "user successfully edited"),HttpStatus.OK);
     }
 
@@ -66,17 +69,42 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
     @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUser(@PathVariable Long id){
+    public ResponseEntity<ResponseWithDTO> getUser(
+            @PathVariable Long id,
+            @RequestParam(required = false) boolean all){
+
         User user = userService.findById(id);
+        DTOFactory.UserDTOSettings settings = all ?
+                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
+
+        return getUserResponse(user, settings);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
+            @RequestParam(required = false) boolean all,
+            @AuthenticationPrincipal User user) {
+
+        DTOFactory.UserDTOSettings settings = all ?
+                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
+
+        return getUserResponse(user, settings);
+    }
+
+    public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings){
         if(user == null)
             return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
 
+
         return new ResponseEntity<>(
                 ResponseWithDTO.create(
-                        DTOFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
+                        dtoFactory.UserToDto(user, settings),
                         "user successfully found"),
                 HttpStatus.OK);
     }
+
+
 
 
     @DeleteMapping("/delete/{id}")
@@ -88,11 +116,4 @@ public class UserController {
     }
 
 
-
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/settings")
-    public void getAuthenticatedUserSettings(
-            @AuthenticationPrincipal User user) {
-        var s = 1;
-    }
 }
