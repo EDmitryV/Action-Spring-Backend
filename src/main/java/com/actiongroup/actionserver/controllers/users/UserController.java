@@ -1,8 +1,9 @@
 package com.actiongroup.actionserver.controllers.users;
 
 
+import com.actiongroup.actionserver.dto.DTOFactory;
 import com.actiongroup.actionserver.dto.ResponseWithDTO;
-import com.actiongroup.actionserver.dto.UserDTO;
+import com.actiongroup.actionserver.dto.UserSimpleDTO;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,9 +24,12 @@ public class UserController {
 
     private UserService userService;
 
+    private DTOFactory dtoFactory;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DTOFactory dtoFactory) {
         this.userService = userService;
+        this.dtoFactory = dtoFactory;
     }
 
     @PatchMapping("/edit")
@@ -32,7 +38,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found or cannot apply changes")
     })
     @Operation(summary = "Edit user by id", description = "Обновляет выбранные поля у пользоваетля")
-    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserDTO userdto){
+    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserSimpleDTO userdto){
 
         User user = userService.findById(userdto.getId());
         if(user == null)
@@ -52,7 +58,9 @@ public class UserController {
         userService.save(user);
 
         return new ResponseEntity<>(
-                ResponseWithDTO.create(UserDTO.toDTO(user), "user successfully edited"),HttpStatus.OK);
+                ResponseWithDTO.create(
+                        dtoFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
+                        "user successfully edited"),HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -61,13 +69,42 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
     @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUser(@PathVariable Long id){
+    public ResponseEntity<ResponseWithDTO> getUser(
+            @PathVariable Long id,
+            @RequestParam(required = false) boolean all){
+
         User user = userService.findById(id);
+        DTOFactory.UserDTOSettings settings = all ?
+                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
+
+        return getUserResponse(user, settings);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
+            @RequestParam(required = false) boolean all,
+            @AuthenticationPrincipal User user) {
+
+        DTOFactory.UserDTOSettings settings = all ?
+                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
+
+        return getUserResponse(user, settings);
+    }
+
+    public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings){
         if(user == null)
             return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(ResponseWithDTO.create(UserDTO.toDTO(user), "user successfully found"),HttpStatus.OK);
+
+        return new ResponseEntity<>(
+                ResponseWithDTO.create(
+                        dtoFactory.UserToDto(user, settings),
+                        "user successfully found"),
+                HttpStatus.OK);
     }
+
+
 
 
     @DeleteMapping("/delete/{id}")
@@ -77,5 +114,6 @@ public class UserController {
         userService.deleteUser(user);
         return new ResponseEntity<>(ResponseWithDTO.create(null, "user deleted found"),HttpStatus.OK);
     }
+
 
 }

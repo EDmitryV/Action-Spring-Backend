@@ -1,7 +1,7 @@
 package com.actiongroup.actionserver.controllers.events;
 
 import com.actiongroup.actionserver.dto.ResponseWithDTO;
-import com.actiongroup.actionserver.dto.UserDTO;
+import com.actiongroup.actionserver.dto.TagDTO;
 import com.actiongroup.actionserver.models.events.Tag;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.events.EventService;
@@ -31,33 +31,33 @@ public class TagController {
             @ApiResponse(responseCode = "400", description = "tag was not found")
     })
     @Operation(summary = "Get tag by id", description = "Возвращает тег по его ID")
-    public ResponseEntity<ResponseWithDTO<Tag>> getUser(@PathVariable Long id){
+    public ResponseEntity<ResponseWithDTO> getTag(@PathVariable Long id){
         Tag tag = eventService.findTagById(id);
         if(tag == null)
-            return new ResponseEntity<>(ResponseWithDTO.create(new Tag(), "tag not found"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ResponseWithDTO.create(new TagDTO(), "tag not found"), HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(ResponseWithDTO.create(tag,"tag successfully found"),HttpStatus.OK);
+        return new ResponseEntity<>(ResponseWithDTO.create(new TagDTO(tag),"tag successfully found"),HttpStatus.OK);
     }
 
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete tag by id", description = "Удаляет тег по его ID")
-    public ResponseEntity<ResponseWithDTO> deleteUser(@PathVariable Long id){
+    public ResponseEntity<ResponseWithDTO> deleteTag(@PathVariable Long id){
         Tag tag = eventService.findTagById(id);
         eventService.deleteTag(tag);
-        return new ResponseEntity<>(ResponseWithDTO.create(new Tag(), "tag deleted"),HttpStatus.OK);
+        return new ResponseEntity<>(ResponseWithDTO.create(new TagDTO(), "tag deleted"),HttpStatus.OK);
     }
 
 
     @PostMapping("/")
     @Operation(summary = "Create tag", description = "Создание тега")
-    public ResponseEntity<ResponseWithDTO> createUser(
+    public ResponseEntity<ResponseWithDTO> createTag(
             @RequestParam(name = "parent_id", required = false) Long parent_id,
             @RequestBody Tag tag){
         if(parent_id != null)
             tag.setParentTag(eventService.findTagById(parent_id));
 
         tag = eventService.saveTag(tag);
-        return new ResponseEntity<>(ResponseWithDTO.create(tag, "tag created successfully"),HttpStatus.OK);
+        return new ResponseEntity<>(ResponseWithDTO.create(new TagDTO(tag), "tag created successfully"),HttpStatus.OK);
     }
 }
