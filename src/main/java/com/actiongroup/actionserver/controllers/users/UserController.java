@@ -1,8 +1,9 @@
 package com.actiongroup.actionserver.controllers.users;
 
 
+import com.actiongroup.actionserver.dto.DTOFactory;
 import com.actiongroup.actionserver.dto.ResponseWithDTO;
-import com.actiongroup.actionserver.dto.UserDTO;
+import com.actiongroup.actionserver.dto.UserSimpleDTO;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,7 +35,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found or cannot apply changes")
     })
     @Operation(summary = "Edit user by id", description = "Обновляет выбранные поля у пользоваетля")
-    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserDTO userdto){
+    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserSimpleDTO userdto){
 
         User user = userService.findById(userdto.getId());
         if(user == null)
@@ -52,7 +55,9 @@ public class UserController {
         userService.save(user);
 
         return new ResponseEntity<>(
-                ResponseWithDTO.create(UserDTO.toDTO(user), "user successfully edited"),HttpStatus.OK);
+                ResponseWithDTO.create(
+                        DTOFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
+                        "user successfully edited"),HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -66,7 +71,11 @@ public class UserController {
         if(user == null)
             return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(ResponseWithDTO.create(UserDTO.toDTO(user), "user successfully found"),HttpStatus.OK);
+        return new ResponseEntity<>(
+                ResponseWithDTO.create(
+                        DTOFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
+                        "user successfully found"),
+                HttpStatus.OK);
     }
 
 
@@ -78,4 +87,12 @@ public class UserController {
         return new ResponseEntity<>(ResponseWithDTO.create(null, "user deleted found"),HttpStatus.OK);
     }
 
+
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/settings")
+    public void getAuthenticatedUserSettings(
+            @AuthenticationPrincipal User user) {
+        var s = 1;
+    }
 }

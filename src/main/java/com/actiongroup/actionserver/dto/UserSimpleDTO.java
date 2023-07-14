@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Component
 @Getter
 @Setter
-public class UserDTO implements ApiDto {
+public class UserSimpleDTO implements ApiDto {
 
     private long id;
     private String username;
@@ -22,21 +22,18 @@ public class UserDTO implements ApiDto {
 
 
 
-    public static UserDTO toDTO(User user){
-        UserDTO dto = new UserDTO();
+    public UserSimpleDTO(User user){
         if(user != null) {
-            dto.setId(user.getId());
-            dto.setUsername(user.getUsername());
-            dto.setEmail(user.getEmail());
-            dto.setFirstname(user.getFirstname());
-            dto.setLastname(user.getLastname());
-            dto.setPhoneNumber(user.getPhoneNumber());
-            dto.setBirthDate(user.getBirthDate());
+            setId(user.getId());
+            setUsername(user.getUsername());
+            setEmail(user.getEmail());
+            setFirstname(user.getFirstname());
+            setLastname(user.getLastname());
+            setPhoneNumber(user.getPhoneNumber());
+            setBirthDate(user.getBirthDate());
         }
-
-        return dto;
     }
 
-
+    public UserSimpleDTO(){}
 
 }
