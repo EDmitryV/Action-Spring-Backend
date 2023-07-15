@@ -101,10 +101,10 @@ public class UserController {
     }
 
     //TODO need in tests
-    @GetMapping("/{username}")
+    @GetMapping("/search")
     @Operation(summary = "Get list of users by part of username", description = "")
-public ResponseEntity<ResponseWithDTO> getUsers(@PathVariable String name){
-        List<User> users = userService.findByUsernameContaining(name);
+public ResponseEntity<ResponseWithDTO> getUsers(@RequestParam("username") String username){
+        List<User> users = userService.findByUsernameContaining(username);
         return new ResponseEntity<>(ResponseWithDTO.create(UsersDTO.toDTO(users),"Users successfully found"), HttpStatus.OK);
     }
 
