@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Tag implements ApiDto {
+public class Tag  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
