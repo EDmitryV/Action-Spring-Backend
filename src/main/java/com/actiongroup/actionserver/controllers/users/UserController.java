@@ -1,9 +1,11 @@
 package com.actiongroup.actionserver.controllers.users;
 
 
+
 import com.actiongroup.actionserver.models.dto.ResponseWithDTO;
-import com.actiongroup.actionserver.models.dto.UserDTO;
+import com.actiongroup.actionserver.models.dto.UserSimpleDTO;
 import com.actiongroup.actionserver.models.dto.UsersDTO;
+import com.actiongroup.actionserver.models.dto.DTOFactory;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,10 +28,14 @@ public class UserController {
 
     private UserService userService;
 
+    private DTOFactory dtoFactory;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DTOFactory dtoFactory) {
         this.userService = userService;
+        this.dtoFactory = dtoFactory;
     }
+
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/edit")
@@ -50,8 +56,10 @@ public class UserController {
         userdto.copyFieldsTo(user);
         userService.save(user);
 
-        return new ResponseEntity<>(
-                ResponseWithDTO.create(UserDTO.toDTO(user), "User successfully edited"), HttpStatus.OK);
+         return new ResponseEntity<>(
+                ResponseWithDTO.create(
+                        dtoFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
+                        "user successfully edited"),HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -60,12 +68,39 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
     @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUser(@PathVariable Long id) {
+     public ResponseEntity<ResponseWithDTO> getUser(
+            @PathVariable Long id,
+            @RequestParam(required = false) boolean all){
+
         User user = userService.findById(id);
-        if (user == null)
+        DTOFactory.UserDTOSettings settings = all ?
+                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
+
+        return getUserResponse(user, settings);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
+            @RequestParam(required = false) boolean all,
+            @AuthenticationPrincipal User user) {
+
+        DTOFactory.UserDTOSettings settings = all ?
+                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
+
+        return getUserResponse(user, settings);
+    }
+
+    public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings){
+        if(user == null)
             return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(ResponseWithDTO.create(UserDTO.toDTO(user), "user successfully found"), HttpStatus.OK);
+
+        return new ResponseEntity<>(
+                ResponseWithDTO.create(
+                        dtoFactory.UserToDto(user, settings),
+                        "user successfully found"),
+                HttpStatus.OK);
     }
 
     //TODO need in tests
@@ -77,12 +112,22 @@ public ResponseEntity<ResponseWithDTO> getUsers(@PathVariable String name){
     }
 
 
-    @DeleteMapping("/delete")
-    @Operation(summary = "Delete authenticated user", description = "Удаляет пользователя по его ID")
+   @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/delete/me")
+    @Operation(summary = "Delete authenticated user", description = "")
+    public ResponseEntity<ResponseWithDTO> deleteUser(@AuthenticationPrincipal User user) {
+        userService.deleteUser(user);
+        return new ResponseEntity<>(ResponseWithDTO.create(null, "User successfully deleted"), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "Delete user by id", description = "Удаляет пользователя по его ID")
     public ResponseEntity<ResponseWithDTO> deleteUser(@PathVariable Long id) {
         User user = userService.findById(id);
         userService.deleteUser(user);
         return new ResponseEntity<>(ResponseWithDTO.create(null, "User successfully deleted"), HttpStatus.OK);
     }
+
 
 }
