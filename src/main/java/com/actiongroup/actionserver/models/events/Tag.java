@@ -1,6 +1,6 @@
 package com.actiongroup.actionserver.models.events;
 
-import com.actiongroup.actionserver.dto.ApiDto;
+import com.actiongroup.actionserver.models.dto.ApiDto;
 import jakarta.persistence.*;
 import lombok.Data;
 

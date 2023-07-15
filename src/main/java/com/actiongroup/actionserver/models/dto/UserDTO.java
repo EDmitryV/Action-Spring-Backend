@@ -1,5 +1,6 @@
-package com.actiongroup.actionserver.dto;
+package com.actiongroup.actionserver.models.dto;
 
+import com.actiongroup.actionserver.models.ObjectWithCopyableFields;
 import com.actiongroup.actionserver.models.users.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 @Component
 @Getter
 @Setter
-public class UserDTO implements ApiDto {
+public class UserDTO extends ObjectWithCopyableFields implements ApiDto{
 
     private long id;
     private String username;

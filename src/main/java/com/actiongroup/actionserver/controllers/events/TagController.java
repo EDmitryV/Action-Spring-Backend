@@ -1,14 +1,11 @@
 package com.actiongroup.actionserver.controllers.events;
 
-import com.actiongroup.actionserver.dto.ResponseWithDTO;
-import com.actiongroup.actionserver.dto.UserDTO;
+import com.actiongroup.actionserver.models.dto.ResponseWithDTO;
 import com.actiongroup.actionserver.models.events.Tag;
-import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.events.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -14,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Optional;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
@@ -69,6 +66,9 @@ public class UserService {
 
     public User findByEmail(String email){
         return userRepo.findByEmail(email).orElse(null);
+    }
+    public List<User> findByUsernameContaining(String name){
+        return userRepo.findByUsernameContaining(name);
     }
 
     public User findById(Long id){
