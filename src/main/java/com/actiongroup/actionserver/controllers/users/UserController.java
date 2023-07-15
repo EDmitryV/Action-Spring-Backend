@@ -1,9 +1,11 @@
 package com.actiongroup.actionserver.controllers.users;
 
 
-import com.actiongroup.actionserver.dto.DTOFactory;
-import com.actiongroup.actionserver.dto.ResponseWithDTO;
-import com.actiongroup.actionserver.dto.UserSimpleDTO;
+
+import com.actiongroup.actionserver.models.dto.ResponseWithDTO;
+import com.actiongroup.actionserver.models.dto.UserSimpleDTO;
+import com.actiongroup.actionserver.models.dto.UsersDTO;
+import com.actiongroup.actionserver.models.dto.DTOFactory;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -32,32 +36,27 @@ public class UserController {
         this.dtoFactory = dtoFactory;
     }
 
-    @PatchMapping("/edit")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user successfully edited"),
-            @ApiResponse(responseCode = "400", description = "User was not found or cannot apply changes")
-    })
-    @Operation(summary = "Edit user by id", description = "Обновляет выбранные поля у пользоваетля")
-    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserSimpleDTO userdto){
 
-        User user = userService.findById(userdto.getId());
-        if(user == null)
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
-        if(userService.existsByUsername(userdto.getUsername()))
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "user already exists"), HttpStatus.BAD_REQUEST);
-
-        if(userdto.getUsername() != null) user.setUsername(userdto.getUsername());
-        if(userdto.getEmail() != null) user.setEmail(userdto.getEmail());
-
-        if(userdto.getFirstname() != null) user.setFirstname(userdto.getFirstname());
-        if(userdto.getLastname() != null) user.setLastname(userdto.getLastname());
-
-        if(userdto.getBirthDate() != null) user.setBirthDate(userdto.getBirthDate());
-        if(userdto.getPhoneNumber() != null) user.setPhoneNumber(userdto.getPhoneNumber());
-
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/edit")
+    //TODO write descriptions on english
+    @Operation(summary = "Edit authenticated user", description = "Обновляет все поля у пользоваетля")
+    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserDTO userdto, @AuthenticationPrincipal User user) {
+        User userWithSameUsername = userService.findByUsername(userdto.getUsername());
+        User userWithSameEmail = userService.findByEmail(userdto.getEmail());
+        //Just for fun?.. (I don't understand why ObjectWithCopyableFields can't access to id of User anyway)
+        if(userdto.getId() != user.getId()){
+            return new ResponseEntity<>(ResponseWithDTO.create(null, "Don't send id here"), HttpStatus.BAD_REQUEST);
+        }
+        if (userWithSameUsername != null && !userWithSameUsername.getId().equals(user.getId()))
+            return new ResponseEntity<>(ResponseWithDTO.create(null, "User with this username already exists"), HttpStatus.BAD_REQUEST);
+        if (userWithSameEmail != null && !userWithSameEmail.getId().equals(user.getId()))
+            return new ResponseEntity<>(ResponseWithDTO.create(null, "User with this email already exists"), HttpStatus.BAD_REQUEST);
+        //Some piece of cringe
+        userdto.copyFieldsTo(user);
         userService.save(user);
 
-        return new ResponseEntity<>(
+         return new ResponseEntity<>(
                 ResponseWithDTO.create(
                         dtoFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
                         "user successfully edited"),HttpStatus.OK);
@@ -69,7 +68,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
     @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUser(
+     public ResponseEntity<ResponseWithDTO> getUser(
             @PathVariable Long id,
             @RequestParam(required = false) boolean all){
 
@@ -104,15 +103,30 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    //TODO need in tests
+    @GetMapping("/{username}")
+    @Operation(summary = "Get list of users by part of username", description = "")
+public ResponseEntity<ResponseWithDTO> getUsers(@PathVariable String name){
+        List<User> users = userService.findByUsernameContaining(name);
+        return new ResponseEntity<>(ResponseWithDTO.create(UsersDTO.toDTO(users),"Users successfully found"), HttpStatus.OK);
+    }
 
 
+   @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/delete/me")
+    @Operation(summary = "Delete authenticated user", description = "")
+    public ResponseEntity<ResponseWithDTO> deleteUser(@AuthenticationPrincipal User user) {
+        userService.deleteUser(user);
+        return new ResponseEntity<>(ResponseWithDTO.create(null, "User successfully deleted"), HttpStatus.OK);
+    }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete user by id", description = "Удаляет пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> deleteUser(@PathVariable Long id){
+    public ResponseEntity<ResponseWithDTO> deleteUser(@PathVariable Long id) {
         User user = userService.findById(id);
         userService.deleteUser(user);
-        return new ResponseEntity<>(ResponseWithDTO.create(null, "user deleted found"),HttpStatus.OK);
+        return new ResponseEntity<>(ResponseWithDTO.create(null, "User successfully deleted"), HttpStatus.OK);
     }
 
 
