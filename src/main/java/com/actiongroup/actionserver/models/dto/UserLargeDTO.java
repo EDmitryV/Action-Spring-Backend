@@ -1,4 +1,4 @@
-package com.actiongroup.actionserver.dto;
+package com.actiongroup.actionserver.models.dto;
 
 import com.actiongroup.actionserver.models.archives.Archive;
 import com.actiongroup.actionserver.models.events.Event;

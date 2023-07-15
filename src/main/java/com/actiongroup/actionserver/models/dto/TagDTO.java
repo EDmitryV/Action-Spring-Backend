@@ -1,4 +1,4 @@
-package com.actiongroup.actionserver.dto;
+package com.actiongroup.actionserver.models.dto;
 
 import com.actiongroup.actionserver.models.events.Tag;
 import jakarta.persistence.*;
