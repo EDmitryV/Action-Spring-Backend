@@ -21,7 +21,7 @@ public class UserSimpleDTO extends ObjectWithCopyableFields implements ApiDto {
     private String lastname;
     private String phoneNumber;
     private LocalDate birthDate;
-    private UserSettings settings;
+    //private UserSettings settings;
 
 
 
@@ -35,7 +35,7 @@ public class UserSimpleDTO extends ObjectWithCopyableFields implements ApiDto {
             dto.setLastname(user.getLastname());
             dto.setPhoneNumber(user.getPhoneNumber());
             dto.setBirthDate(user.getBirthDate());
-            dto.setSettings(user.getSettings());
+            //dto.setSettings(user.getSettings());
         }
         return dto;
     }
@@ -51,7 +51,7 @@ public class UserSimpleDTO extends ObjectWithCopyableFields implements ApiDto {
             setLastname(user.getLastname());
             setPhoneNumber(user.getPhoneNumber());
             setBirthDate(user.getBirthDate());
-            setSettings(user.getSettings());
+            //setSettings(user.getSettings());
         }
     }
 }
