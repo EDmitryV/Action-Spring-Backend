@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class MusicArchiveService {
@@ -14,7 +16,7 @@ public class MusicArchiveService {
     @Autowired
     private final MusicArchiveRepository musicArchiveRepository;
 
-    public MusicArchive findByOwner(User owner){
+    public Set<MusicArchive> findByOwner(User owner){
         return musicArchiveRepository.findByOwner(owner);
     };
     public MusicArchive findByName(String name){
