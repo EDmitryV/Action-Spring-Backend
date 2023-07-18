@@ -1,11 +1,7 @@
 package com.actiongroup.actionserver.models.archives;
 
 import com.actiongroup.actionserver.models.users.User;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -16,7 +12,7 @@ public abstract class Archive {
     @GeneratedValue
     private Long id;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
