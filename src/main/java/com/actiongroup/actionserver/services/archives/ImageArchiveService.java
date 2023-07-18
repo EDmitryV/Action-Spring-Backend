@@ -9,13 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class ImageArchiveService {
     @Autowired
     private final ImageArchiveRepository imageArchiveRepository;
 
-    public ImageArchive findByOwner(User owner){
+    public Set<ImageArchive> findByOwner(User owner){
         return imageArchiveRepository.findByOwner(owner);
     };
     public ImageArchive findByName(String name){

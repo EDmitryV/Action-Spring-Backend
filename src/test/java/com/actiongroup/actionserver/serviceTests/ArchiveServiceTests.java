@@ -53,6 +53,19 @@ public class ArchiveServiceTests {
         //Assertions.assertEquals(1, usr.getMusicArchives().size());
     }
 
+
+    @Order(2)
+    @Test
+    public void addSecondArchive(){
+        User user = users.get(0);
+        MusicArchive archive = new MusicArchive();
+        archive.setOwner(user);
+        archive.setName("второй музык архив");
+        archive = musicService.save(archive);
+        Assertions.assertEquals(2, musicService.findByOwner(user).size());
+
+    }
+
     @Order(2)
     @Test
     @Disabled

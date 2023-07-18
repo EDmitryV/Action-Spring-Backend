@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.models.dto;
 
+import com.actiongroup.actionserver.models.archives.Archive;
 import com.actiongroup.actionserver.models.events.Tag;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.events.EventService;
@@ -8,6 +9,7 @@ import com.actiongroup.actionserver.services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,4 +53,19 @@ public class DTOFactory {
         return new TagDTO(tag);
     }
 
+
+    public ApiDto ArchiveToDto(Archive archive){
+        UserSimpleDTO userDto = (UserSimpleDTO) UserToDto(archive.getOwner(), UserDTOSettings.Simple);
+        ArchiveDTO dto = new ArchiveDTO(archive);
+        dto.setOwner(userDto);
+        return dto;
+    }
+
+    public ApiDto ArchivesToDtoList(Set<? extends Archive> archives){
+        Set<ApiDto> arDto = new HashSet<>();
+        for(Archive ar: archives){
+            arDto.add(ArchiveToDto(ar));
+        }
+        return new ApiDtoList(arDto);
+    }
 }

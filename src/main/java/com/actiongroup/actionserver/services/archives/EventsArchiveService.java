@@ -7,13 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class EventsArchiveService {
     @Autowired
     private final EventArchiveRepository eventArchiveRepository;
 
-    public EventsArchive findByOwner(User owner){
+    public Set<EventsArchive> findByOwner(User owner){
         return eventArchiveRepository.findByOwner(owner);
     };
     public EventsArchive findByName(String name){
