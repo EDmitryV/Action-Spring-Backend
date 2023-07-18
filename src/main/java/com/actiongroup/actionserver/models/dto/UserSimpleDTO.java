@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.models.dto;
 
+import com.actiongroup.actionserver.models.ObjectWithCopyableFields;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 @Component
 @Getter
 @Setter
-public class UserSimpleDTO implements ApiDto {
+public class UserSimpleDTO extends ObjectWithCopyableFields implements ApiDto {
 
     private long id;
     private String username;
@@ -20,7 +21,7 @@ public class UserSimpleDTO implements ApiDto {
     private String lastname;
     private String phoneNumber;
     private LocalDate birthDate;
-    private UserSettings settings;
+    //private UserSettings settings;
 
 
 
@@ -34,7 +35,7 @@ public class UserSimpleDTO implements ApiDto {
             dto.setLastname(user.getLastname());
             dto.setPhoneNumber(user.getPhoneNumber());
             dto.setBirthDate(user.getBirthDate());
-            dto.setSettings(user.getSettings());
+            //dto.setSettings(user.getSettings());
         }
         return dto;
     }
@@ -50,7 +51,7 @@ public class UserSimpleDTO implements ApiDto {
             setLastname(user.getLastname());
             setPhoneNumber(user.getPhoneNumber());
             setBirthDate(user.getBirthDate());
-            setSettings(user.getSettings());
+            //setSettings(user.getSettings());
         }
     }
 }

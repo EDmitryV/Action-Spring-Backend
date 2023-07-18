@@ -13,21 +13,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class UsersDTO implements ApiDto{
-    private List<UserDTO> users;
+    private List<UserSimpleDTO> users;
     public static UsersDTO toDTO(List<User> users){
-        List<UserDTO> userDTOS = new ArrayList<>();
+        List<UserSimpleDTO> userDTOS = new ArrayList<>();
         for(User user : users) {
-            UserDTO dto = new UserDTO();
-            if (user != null) {
-                dto.setId(user.getId());
-                dto.setUsername(user.getUsername());
-                dto.setEmail(user.getEmail());
-                dto.setFirstname(user.getFirstname());
-                dto.setLastname(user.getLastname());
-                dto.setPhoneNumber(user.getPhoneNumber());
-                dto.setBirthDate(user.getBirthDate());
-            }
-            userDTOS.add(dto);
+            userDTOS.add(new UserSimpleDTO(user)); // user==null учтено в конструкторе
         }
         return new UsersDTO(userDTOS);
     }

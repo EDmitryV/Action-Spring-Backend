@@ -1,6 +1,10 @@
 package com.actiongroup.actionserver.models.users;
 
 import com.actiongroup.actionserver.models.EntityWithStatus;
+import com.actiongroup.actionserver.models.archives.EventsArchive;
+import com.actiongroup.actionserver.models.archives.ImageArchive;
+import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.VideoArchive;
 import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.auth.Token;
 import jakarta.persistence.*;
@@ -44,6 +48,24 @@ public class User extends EntityWithStatus implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<MusicArchive> musicArchives;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<ImageArchive> imageArchives;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<VideoArchive> videoArchives;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<EventsArchive> eventsArchives;
+
+
+
 
 
     @Override

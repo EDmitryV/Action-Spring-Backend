@@ -38,7 +38,7 @@ public class UserController {
     @PutMapping("/edit")
     //TODO write descriptions on english
     @Operation(summary = "Edit authenticated user", description = "Обновляет все поля у пользоваетля")
-    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserDTO userdto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserSimpleDTO userdto, @AuthenticationPrincipal User user) {
         User userWithSameUsername = userService.findByUsername(userdto.getUsername());
         User userWithSameEmail = userService.findByEmail(userdto.getEmail());
         //Just for fun?.. (I don't understand why ObjectWithCopyableFields can't access to id of User anyway)
