@@ -1,17 +1,23 @@
 package com.actiongroup.actionserver.models.archives.media;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import com.actiongroup.actionserver.models.ObjectWithCopyableFields;
+import com.actiongroup.actionserver.models.users.User;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 @MappedSuperclass
-public abstract class Media{
-    
+public abstract class Media extends ObjectWithCopyableFields {
+
     @Id
     @GeneratedValue
     private Long id;
-    
-    protected String url;
+    //    @Column(unique = true)
+    //    protected String url;
+    @NotNull
+    protected String name;
+    @NotNull
+    @ManyToOne
+    protected User owner;
 }
