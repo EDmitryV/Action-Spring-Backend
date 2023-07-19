@@ -18,6 +18,10 @@ import lombok.Data;
 @Entity
 public class Message extends EntityWithStatus {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @ManyToOne()
     @JoinColumn(name="chat_id", referencedColumnName = "id")
     private Chat chat;
@@ -50,4 +54,13 @@ public class Message extends EntityWithStatus {
     
 
     boolean isPinned;
+
+    @Enumerated(EnumType.STRING)
+    private MsgStatus msgStatus;
+
+    public enum MsgStatus {
+        RECEIVED, DELIVERED
+    }
+
+
 }
