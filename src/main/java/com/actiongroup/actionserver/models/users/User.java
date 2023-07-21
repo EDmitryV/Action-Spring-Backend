@@ -49,19 +49,20 @@ public class User extends EntityWithStatus implements UserDetails {
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<MusicArchive> musicArchives;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<ImageArchive> imageArchives;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<VideoArchive> videoArchives;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<EventsArchive> eventsArchives;
 
 
