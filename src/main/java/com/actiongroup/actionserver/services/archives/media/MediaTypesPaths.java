@@ -8,10 +8,10 @@ import java.nio.file.Paths;
 
 @RequiredArgsConstructor
 public enum MediaTypesPaths {
-    ROOT(Paths.get("data")),
-    MUSIC(Paths.get("data/music")),
-    VIDEO(Paths.get("data/video")),
-    IMAGE(Paths.get("data/image"));
+    ROOT("data"),
+    MUSIC("data/music"),
+    VIDEO("data/video"),
+    IMAGE("data/image");
     @Getter
-    private final Path path;
+    private final String path;
 }
