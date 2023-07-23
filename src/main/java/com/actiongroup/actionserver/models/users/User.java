@@ -49,6 +49,7 @@ public class User extends EntityWithStatus implements UserDetails {
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats = new HashSet<>();
 
+
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<MusicArchive> musicArchives;
 

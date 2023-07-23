@@ -18,6 +18,10 @@ public class VideoArchiveService {
     }
 
     public VideoArchive save(VideoArchive videoArchive){
+        if (videoArchive.getName() == null){
+            videoArchive = videoArchiveRepository.save(videoArchive);
+            videoArchive.setName(videoArchive.getId().toString());
+        }
         return videoArchiveRepository.save(videoArchive);
     }
 }

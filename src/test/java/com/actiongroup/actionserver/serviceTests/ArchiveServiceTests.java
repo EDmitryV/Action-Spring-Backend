@@ -9,9 +9,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -33,7 +35,7 @@ public class ArchiveServiceTests {
 
     @AfterAll
     private void clear(){
-        //clearUsers();
+        clearUsers();
     }
 
     @Order(1)
@@ -42,6 +44,7 @@ public class ArchiveServiceTests {
         for(User usr: users)
             Assertions.assertNull(usr.getMusicArchives());
     }
+
 
     @Order(2)
     @Test
@@ -54,6 +57,7 @@ public class ArchiveServiceTests {
         Assertions.assertEquals(1, musicService.findByOwner(usr).size());
         //Assertions.assertEquals(1, usr.getMusicArchives().size());
     }
+
 
 
     @Order(3)

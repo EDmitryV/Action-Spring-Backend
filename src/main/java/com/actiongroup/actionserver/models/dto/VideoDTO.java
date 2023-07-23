@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class VideoDTO {
     private long id;
     private String name;

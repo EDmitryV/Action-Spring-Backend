@@ -7,6 +7,7 @@ import org.geolatte.geom.Circle;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+
 @Data
 @MappedSuperclass
 public abstract class Archive {
