@@ -28,17 +28,12 @@ public class ChatController {
 
     @MessageMapping("/chat/{chat_id}")
     public MessageDTO processMessage(
-            //@AuthenticationPrincipal User user,
             @DestinationVariable Long chat_id,
-            @Payload MessageDTO messageDto){ //, @RequestParam(required = true) Long chatId){
+            @Payload MessageDTO messageDto){
 
             System.out.println(messageDto.getContent());
             System.out.println(chat_id);
-            //message.setAuthor(user);
-            Message msg = new Message();
-            msg.setContent(messageDto.getContent());
-            System.out.println("/topic/"+chat_id);
-            messagingTemplate.convertAndSend("/topic/"+chat_id, msg);
+            messagingTemplate.convertAndSend("/topic/"+chat_id, messageDto);
             return messageDto;
     }
 

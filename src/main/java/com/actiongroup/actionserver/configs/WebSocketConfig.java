@@ -18,8 +18,8 @@ import java.util.List;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker( "/chat");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker( "/topic"); //префикс для подписок
+        config.setApplicationDestinationPrefixes("/app"); //префикс для @MessageMapping
         //config.setUserDestinationPrefix("/user");
     }
 

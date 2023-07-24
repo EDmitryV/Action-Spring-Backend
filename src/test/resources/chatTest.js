@@ -3,11 +3,18 @@ const stompClient = new StompJs.Client({
 });
 
 
+
+const baseSendToEndpoint = "/app/chat/";
+var SendToEndpoint='';
+const baseSubscribeEndpoint = '/topic/'
+// '/topic/'+$("#chat_id").val()
+
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    console.log("Subscribed to: "+ '/topic/'+$("#chat_id").val())
-    stompClient.subscribe('/topic/'+$("#chat_id").val(), (msg) => {
+    subscribeEndpoint= baseSubscribeEndpoint+ $("#chat_id").val();
+    console.log("Subscribed to: "+ subscribeEndpoint);
+    stompClient.subscribe(subscribeEndpoint, (msg) => {
         console.log(JSON.parse(msg.body));
         showMessage(JSON.parse(msg.body).content);
     });
@@ -35,11 +42,21 @@ function setConnected(connected) {
     $("#messages").html("");
 }
 
+
 function connect() {
-    console.log("connecting to");
-    console.log('/chat/' + $("#chat_id").val());
+    sendToEndpoint = baseSendToEndpoint +$("#chat_id").val();
+    console.log("connecting to: " + sendToEndpoint);
     stompClient.activate();
 }
+
+/*
+function connect(event) {
+    var socket = new SockJS('http://localhost:8080/action-ws');
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, onConnected, onError);
+}
+*/
 
 function disconnect() {
     stompClient.deactivate();
@@ -49,9 +66,9 @@ function disconnect() {
 
 function sendName() {
     console.log(JSON.stringify({'content': $("#name").val()}));
-    console.log("Sended to: "+ "/app/chat/"+$("#chat_id").val());
+    console.log("Sended to: "+ sendToEndpoint);
     stompClient.publish({
-        destination: "/app/chat/"+$("#chat_id").val(),
+        destination: sendToEndpoint,
         body: JSON.stringify({'content': $("#name").val()})
     });
 }
