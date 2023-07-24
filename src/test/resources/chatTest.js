@@ -69,7 +69,12 @@ function sendName() {
     console.log("Sended to: "+ sendToEndpoint);
     stompClient.publish({
         destination: sendToEndpoint,
-        body: JSON.stringify({'content': $("#name").val()})
+        body: JSON.stringify(
+            {
+                'content': $("#name").val(),
+                "chatId":$("#chat_id").val(),
+                "authorId":0,
+            })
     });
 }
 

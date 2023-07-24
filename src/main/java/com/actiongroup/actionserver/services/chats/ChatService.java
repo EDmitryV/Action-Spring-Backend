@@ -2,18 +2,24 @@ package com.actiongroup.actionserver.services.chats;
 
 import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.chats.Message;
+import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.chats.ChatRepository;
 import com.actiongroup.actionserver.repositories.chats.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ChatService {
 
 
+    @Autowired
     private ChatRepository chatRepository;
+    @Autowired
     private MessageRepository messageRepository;
 
     public Chat saveChat(Chat chat){
@@ -26,5 +32,15 @@ public class ChatService {
 
     public Chat findChatByid(Long id){
         return chatRepository.findById(id).orElse(null);
+    }
+
+    List<Message> findMessagesByChat(Chat chat){
+        return messageRepository.findByChat(chat);
+    }
+
+    public Chat addMember(Chat chat,User user){
+        Set<User> members = chat.getMembers();
+        members.add(user);
+        return saveChat(chat);
     }
 }

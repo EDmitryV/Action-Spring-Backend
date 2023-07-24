@@ -15,6 +15,7 @@ public class MessageDTO implements ApiDto{
 
     private Long chatId;
 
+    private Long authorId;
 
 
 }
