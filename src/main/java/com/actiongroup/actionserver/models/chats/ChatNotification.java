@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.models.chats;
 
+import com.actiongroup.actionserver.models.dto.ApiDto;
 import com.actiongroup.actionserver.models.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Data;
 
 
 @Data
-@AllArgsConstructor
 public class ChatNotification {
 
 //    @OneToOne
@@ -16,7 +16,8 @@ public class ChatNotification {
 
     private Long messageId;
 
-    private Long senderId;
-    private String senderName;
+    private ApiDto sender;
+
+    private String content;
 
 }

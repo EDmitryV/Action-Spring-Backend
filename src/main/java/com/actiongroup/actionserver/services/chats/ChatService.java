@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ public class ChatService {
 
     public Chat addMember(Chat chat,User user){
         Set<User> members = chat.getMembers();
+        if(members == null) members = new HashSet<>();
         members.add(user);
         return saveChat(chat);
     }

@@ -7,6 +7,8 @@ const stompClient = new StompJs.Client({
 const baseSendToEndpoint = "/app/chat/";
 var SendToEndpoint='';
 const baseSubscribeEndpoint = '/topic/'
+
+const baseNotificationEndpoint = '/topic';
 // '/topic/'+$("#chat_id").val()
 
 stompClient.onConnect = (frame) => {
@@ -15,6 +17,13 @@ stompClient.onConnect = (frame) => {
     subscribeEndpoint= baseSubscribeEndpoint+ $("#chat_id").val();
     console.log("Subscribed to: "+ subscribeEndpoint);
     stompClient.subscribe(subscribeEndpoint, (msg) => {
+        console.log(JSON.parse(msg.body));
+        showMessage(JSON.parse(msg.body).content);
+    });
+
+    notificationEndpoint = subscribeEndpoint+'/notifications';
+    console.log("Subscribed at notification room at: "+ notificationEndpoint)
+    stompClient.subscribe(notificationEndpoint, (msg) => {
         console.log(JSON.parse(msg.body));
         showMessage(JSON.parse(msg.body).content);
     });
