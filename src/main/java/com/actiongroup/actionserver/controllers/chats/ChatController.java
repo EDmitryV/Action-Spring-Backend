@@ -42,7 +42,7 @@ public class ChatController {
 
     @GetMapping("/")
     public ResponseEntity<ResponseWithDTO> getChats(@AuthenticationPrincipal User user){
-        Set<Chat> chats = user.getChats();
+        Set<Chat> chats = chatService.getChatsByUser(user);
         if(chats == null) chats = new HashSet<>();
 
         return new ResponseEntity<>(ResponseWithDTO.create(dtoFactory.ChatsToDtoList(chats), "Chats successfully found"), HttpStatus.OK);

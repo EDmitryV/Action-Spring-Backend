@@ -28,7 +28,7 @@ public class Chat{
 
 
     // TODO удаление записи при удалении пользователя
-    @ManyToMany(cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="member_id", referencedColumnName = "id")
     private Set<User> members;

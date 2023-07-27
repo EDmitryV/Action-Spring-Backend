@@ -45,4 +45,8 @@ public class ChatService {
         members.add(user);
         return saveChat(chat);
     }
+
+    public Set<Chat> getChatsByUser(User member){
+        return chatRepository.findByMembers(member);
+    }
 }
