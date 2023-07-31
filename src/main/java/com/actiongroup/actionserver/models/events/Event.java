@@ -3,7 +3,7 @@ package com.actiongroup.actionserver.models.events;
 import com.actiongroup.actionserver.models.EntityWithStatus;
 import com.actiongroup.actionserver.models.archives.EventsArchive;
 import com.actiongroup.actionserver.models.archives.ImageArchive;
-import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.AudioArchive;
 import com.actiongroup.actionserver.models.archives.VideoArchive;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -39,7 +39,7 @@ public class Event extends EntityWithStatus {
     private Point point;
     
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name="author_id", referencedColumnName = "id")
     private User author;
 
@@ -49,22 +49,22 @@ public class Event extends EntityWithStatus {
     private Chat chat;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="music_archvie_id", referencedColumnName = "id")
-    private Set<MusicArchive> musicArchives;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mainEvent")
+    private Set<AudioArchive> relatedAudioArchives;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="image_archvie_id", referencedColumnName = "id")
-    private Set<ImageArchive> imageArchives;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mainEvent")
+    private Set<ImageArchive> relatedImageArchives;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="video_archvie_id", referencedColumnName = "id")
-    private Set<VideoArchive> videoArchives;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mainEvent")
+    private Set<VideoArchive> relatedVideoArchives;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="event_archvie_id", referencedColumnName = "id")
-    private Set<EventsArchive> eventsArchives;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mainEvent")
+    private Set<EventsArchive> relatedEventsArchives;
+
+    @ManyToOne()
+    @JoinColumn(name="archive_id", referencedColumnName = "id")
+    private EventsArchive archive;
 }

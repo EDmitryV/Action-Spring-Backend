@@ -1,9 +1,12 @@
 package com.actiongroup.actionserver.controllers.users;
 
 
-
+import com.actiongroup.actionserver.models.archives.ImageArchive;
 import com.actiongroup.actionserver.models.dto.*;
 import com.actiongroup.actionserver.models.users.User;
+import com.actiongroup.actionserver.services.archives.AudioArchiveService;
+import com.actiongroup.actionserver.services.archives.ImageArchiveService;
+import com.actiongroup.actionserver.services.archives.VideoArchiveService;
 import com.actiongroup.actionserver.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,6 +27,9 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+    private VideoArchiveService videoArchiveService;
+    private AudioArchiveService audioArchiveService;
+    private ImageArchiveService imageArchiveService;
 
     private DTOFactory dtoFactory;
 
@@ -42,7 +48,7 @@ public class UserController {
         User userWithSameUsername = userService.findByUsername(userdto.getUsername());
         User userWithSameEmail = userService.findByEmail(userdto.getEmail());
         //Just for fun?.. (I don't understand why ObjectWithCopyableFields can't access to id of User anyway)
-        if(userdto.getId() != user.getId()){
+        if (userdto.getId() != user.getId()) {
             return new ResponseEntity<>(ResponseWithDTO.create(null, "Don't send id here"), HttpStatus.BAD_REQUEST);
         }
         if (userWithSameUsername != null && !userWithSameUsername.getId().equals(user.getId()))
@@ -53,11 +59,12 @@ public class UserController {
         userdto.copyFieldsTo(user);
         userService.save(user);
 
-         return new ResponseEntity<>(
+        return new ResponseEntity<>(
                 ResponseWithDTO.create(
                         dtoFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
-                        "user successfully edited"),HttpStatus.OK);
+                        "user successfully edited"), HttpStatus.OK);
     }
+
 
     @GetMapping("/{id}")
     @ApiResponses(value = {
@@ -65,9 +72,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
     @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-     public ResponseEntity<ResponseWithDTO> getUser(
+    public ResponseEntity<ResponseWithDTO> getUser(
             @PathVariable Long id,
-            @RequestParam(required = false) boolean all){
+            @RequestParam(required = false) boolean all) {
 
         User user = userService.findById(id);
         DTOFactory.UserDTOSettings settings = all ?
@@ -77,7 +84,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me")
+    @GetMapping("/me-full")
     public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
             @RequestParam(required = false) boolean all,
             @AuthenticationPrincipal User user) {
@@ -88,8 +95,15 @@ public class UserController {
         return getUserResponse(user, settings);
     }
 
-    public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings){
-        if(user == null)
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public ResponseEntity<UserSmallDTO> getAuthenticatedUser(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(new UserSmallDTO(user));
+    }
+
+    public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings) {
+        if (user == null)
             return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
 
 
@@ -103,13 +117,13 @@ public class UserController {
     //TODO need in tests
     @GetMapping("/search")
     @Operation(summary = "Get list of users by part of username", description = "")
-public ResponseEntity<ResponseWithDTO> getUsers(@RequestParam("username") String username){
+    public ResponseEntity<ResponseWithDTO> getUsers(@RequestParam("username") String username) {
         List<User> users = userService.findByUsernameContaining(username);
-        return new ResponseEntity<>(ResponseWithDTO.create(UsersDTO.toDTO(users),"Users successfully found"), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseWithDTO.create(UsersDTO.toDTO(users), "Users successfully found"), HttpStatus.OK);
     }
 
 
-   @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/me")
     @Operation(summary = "Delete authenticated user", description = "")
     public ResponseEntity<ResponseWithDTO> deleteUser(@AuthenticationPrincipal User user) {

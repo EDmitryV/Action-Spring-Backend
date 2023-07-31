@@ -1,9 +1,9 @@
 package com.actiongroup.actionserver.serviceTests;
 
 import com.actiongroup.actionserver.TestDataLoader;
-import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.AudioArchive;
 import com.actiongroup.actionserver.models.users.User;
-import com.actiongroup.actionserver.services.archives.MusicArchiveService;
+import com.actiongroup.actionserver.services.archives.AudioArchiveService;
 import com.actiongroup.actionserver.services.users.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class ArchiveServiceTests {
     private UserService userService;
 
     @Autowired
-    private MusicArchiveService musicService;
+    private AudioArchiveService musicService;
 
     private List<User> users;
 
@@ -38,14 +38,14 @@ public class ArchiveServiceTests {
     @Test
     public void nullWhenNoArchives(){
         for(User usr: users)
-            Assertions.assertNull(usr.getMusicArchives());
+            Assertions.assertNull(usr.getAudioArchives());
     }
 
     @Order(1)
     @Test
     public void initArchivesFromService(){
         User usr = users.get(0);
-        MusicArchive archive = new MusicArchive();
+        AudioArchive archive = new AudioArchive();
         archive.setOwner(usr);
         archive.setName("первый музык архив");
         archive = musicService.save(archive);
@@ -58,7 +58,7 @@ public class ArchiveServiceTests {
     @Test
     public void addSecondArchive(){
         User user = users.get(0);
-        MusicArchive archive = new MusicArchive();
+        AudioArchive archive = new AudioArchive();
         archive.setOwner(user);
         archive.setName("второй музык архив");
         archive = musicService.save(archive);
@@ -73,10 +73,10 @@ public class ArchiveServiceTests {
         // ЭТОТ ТЕСТ НЕ ПРОХОДИТ (и не факт, что вообще должен)
         refreshUsers();
         User usr = users.get(0);
-        MusicArchive archive = new MusicArchive();
+        AudioArchive archive = new AudioArchive();
         archive.setOwner(usr);
         archive.setName("второй музык архив");
-        usr.getMusicArchives().add(archive);
+        usr.getAudioArchives().add(archive);
         usr = userService.save(usr);
         Assertions.assertEquals(2, musicService.findByOwner(usr).size());
         //Assertions.assertEquals(2, usr.getMusicArchives().size());

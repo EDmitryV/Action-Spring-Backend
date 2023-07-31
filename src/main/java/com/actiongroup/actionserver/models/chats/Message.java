@@ -4,10 +4,8 @@ import java.time.LocalDateTime;
 
 import com.actiongroup.actionserver.models.EntityWithStatus;
 import com.actiongroup.actionserver.models.archives.ImageArchive;
-import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.AudioArchive;
 import com.actiongroup.actionserver.models.archives.VideoArchive;
-import com.actiongroup.actionserver.models.archives.media.Image;
-import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
 
 import jakarta.persistence.*;
@@ -44,7 +42,7 @@ public class Message extends EntityWithStatus {
 
     @OneToOne()
     @JoinColumn(name="music_archive_id", referencedColumnName = "id")
-    private MusicArchive musicArchive;
+    private AudioArchive audioArchive;
     
     private LocalDateTime at;
     

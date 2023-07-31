@@ -3,8 +3,9 @@ package com.actiongroup.actionserver.models.users;
 import com.actiongroup.actionserver.models.EntityWithStatus;
 import com.actiongroup.actionserver.models.archives.EventsArchive;
 import com.actiongroup.actionserver.models.archives.ImageArchive;
-import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.AudioArchive;
 import com.actiongroup.actionserver.models.archives.VideoArchive;
+import com.actiongroup.actionserver.models.archives.media.Image;
 import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.auth.Token;
 import jakarta.persistence.*;
@@ -34,6 +35,8 @@ public class User extends EntityWithStatus implements UserDetails {
     private String lastname;
     private String phoneNumber;
     private LocalDate birthDate;
+    @ManyToOne
+    private Image iconImage;
 
     @Column(nullable = false)
     private String password;
@@ -50,7 +53,7 @@ public class User extends EntityWithStatus implements UserDetails {
     private Set<Chat> chats = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
-    private Set<MusicArchive> musicArchives;
+    private Set<AudioArchive> audioArchives;
 
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)

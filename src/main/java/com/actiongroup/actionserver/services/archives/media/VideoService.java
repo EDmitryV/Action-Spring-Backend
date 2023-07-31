@@ -2,76 +2,63 @@ package com.actiongroup.actionserver.services.archives.media;
 
 import com.actiongroup.actionserver.models.archives.VideoArchive;
 import com.actiongroup.actionserver.models.archives.media.Video;
-import com.actiongroup.actionserver.models.dto.VideoDTO;
 import com.actiongroup.actionserver.repositories.archives.media.VideoRepository;
 import com.actiongroup.actionserver.services.archives.VideoArchiveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class VideoService {
-    private final ResourceLoader resourceLoader;
-    private final VideoRepository videoRepository;
     private final VideoArchiveService videoArchiveService;
+    private final VideoRepository videoRepository;
     private final MediaService mediaService;
 
     public Resource getVideoById(Long id) {
         Video video = videoRepository.findById(id).orElse(null);
         if (video == null)
             throw new IllegalArgumentException("Video with that id doesn't exists: " + id);
-        return mediaService.load(video.getOwner(), video.getVideoArchive(), video, MediaTypesPaths.VIDEO);
+        return mediaService.load(video.getOwner(), video.getArchive(), video, MediaTypesPaths.VIDEO);
     }
 
     public Video save(Video video) {
         return videoRepository.save(video);
     }
 
+    public void saveWithFile(Video video, MultipartFile file) {
+        try {
+            mediaService.saveFile(file, MediaTypesPaths.VIDEO, video.getOwner(), video.getArchive(), video);
+            save(video);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<Video> findByVideoArchive(VideoArchive videoArchive) {
-        return videoRepository.findByVideoArchive(videoArchive);
+        return videoRepository.findByArchive(videoArchive);
     }
 
     //page starts from 0
-    public List<VideoDTO> getVideosFromArchive(Long id, int onPage, int page) {
+    public List<Video> getVideosFromArchive(Long id, int onPage, int page) {
         VideoArchive videoArchive = videoArchiveService.findById(id);
         if (videoArchive == null) {
             throw new IllegalArgumentException("Invalid archive id: " + id);
         }
         //TODO rewrite to load only required from DB (not all)
         List<Video> videos = findByVideoArchive(videoArchive);
-        videos = videos.subList(page * onPage, (page + 1) * onPage);
-        List<VideoDTO> videoDTOs = new ArrayList<>();
-        for (Video video : videos) {
-            File file = mediaService.getFilepath(video.getOwner(), video.getVideoArchive(), video, MediaTypesPaths.VIDEO).toFile();
-            try (FileInputStream inputStream = new FileInputStream(file)) {
-                videoDTOs.add(new VideoDTO(
-                        video.getId(),
-                        video.getName(),
-                        video.getAutoRepeat(),
-                        readFirstFrameFromVideo(file),
-                        inputStream.available(),
-                        video.getOwner().getId(),
-                        video.getVideoArchive().getId()
-                ));
-            } catch (IOException e) {
-                throw new RuntimeException("Error reading video file: " + e.getMessage());
-            }
-        }
-        return videoDTOs;
+        return videos.subList(page * onPage, (page + 1) * onPage);
     }
 
     private BufferedImage readFirstFrameFromVideo(File file) {
@@ -95,7 +82,14 @@ public class VideoService {
             throw new RuntimeException("Error while processing the video: " + e.getMessage());
         }
     }
-    public void delete(Video video){
-        mediaService.delete(video.getOwner(), video.getVideoArchive(), video, MediaTypesPaths.VIDEO);
+
+    public void delete(Video video) {
+        video.getArchive().setContentCount(video.getArchive().getContentCount() - 1);
+        mediaService.delete(video.getOwner(), video.getArchive(), video, MediaTypesPaths.VIDEO);
+        videoRepository.delete(video);
+    }
+
+    public Video findById(Long id) {
+        return videoRepository.findById(id).orElse(null);
     }
 }
