@@ -48,9 +48,10 @@ public class User extends EntityWithStatus implements UserDetails {
     private Role role;
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
     private UserSettings settings;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "chat_id", referencedColumnName = "id")
-    private Set<Chat> chats = new HashSet<>();
+
+//    @ManyToMany(mappedBy = "members",fetch = FetchType.EAGER)
+//    //@JoinColumn(name = "chat_id", referencedColumnName = "id")
+//    private Set<Chat> chats;
 
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)

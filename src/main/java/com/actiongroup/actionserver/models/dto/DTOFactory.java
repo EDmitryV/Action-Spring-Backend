@@ -1,11 +1,15 @@
 package com.actiongroup.actionserver.models.dto;
 
 import com.actiongroup.actionserver.models.archives.Archive;
+import com.actiongroup.actionserver.models.chats.Chat;
+import com.actiongroup.actionserver.models.chats.Message;
 import com.actiongroup.actionserver.models.events.Tag;
 import com.actiongroup.actionserver.models.users.User;
+import com.actiongroup.actionserver.services.chats.ChatService;
 import com.actiongroup.actionserver.services.events.EventService;
 import com.actiongroup.actionserver.services.users.RelationshipService;
 import com.actiongroup.actionserver.services.users.UserService;
+import org.geolatte.geom.M;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +26,8 @@ public class DTOFactory {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private ChatService chatService;
 
     public enum UserDTOSettings{
         Simple,
@@ -66,6 +72,39 @@ public class DTOFactory {
         Set<ApiDto> arDto = new HashSet<>();
         for(Archive ar: archives){
             arDto.add(ArchiveToDto(ar));
+        }
+        return new ApiDtoList(arDto);
+    }
+
+
+    public Message DTOtoMsg(MessageDTO dto){
+        Message msg = new Message();
+        User author = userService.findById(dto.getAuthorId());
+        msg.setAuthor(author);
+
+        msg.setChat(chatService.findChatByid(dto.getChatId()));
+        msg.setContent(dto.getContent());
+        msg.setAt(dto.getAt());
+        return msg;
+    }
+
+    public ApiDto ChatToDto(Chat chat){
+        ChatDTO dto = new ChatDTO();
+        dto.setId(chat.getId());
+        dto.setName(chat.getName());
+        HashSet<ApiDto> dtoMembers = new HashSet<>();
+        for(User user: chat.getMembers()){
+            ApiDto udto = this.UserToDto(user, UserDTOSettings.Simple);
+            dtoMembers.add(udto);
+        }
+        dto.setMembers(dtoMembers);
+        return dto;
+    }
+
+    public ApiDto ChatsToDtoList(Set<Chat> chats){
+        Set<ApiDto> arDto = new HashSet<>();
+        for(Chat c: chats){
+            arDto.add(ChatToDto(c));
         }
         return new ApiDtoList(arDto);
     }

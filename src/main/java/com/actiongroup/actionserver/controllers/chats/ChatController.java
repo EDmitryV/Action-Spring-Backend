@@ -1,44 +1,50 @@
 package com.actiongroup.actionserver.controllers.chats;
 
 import com.actiongroup.actionserver.models.chats.Chat;
-import com.actiongroup.actionserver.models.chats.ChatNotification;
-import com.actiongroup.actionserver.models.chats.Message;
+import com.actiongroup.actionserver.models.dto.ApiDto;
+import com.actiongroup.actionserver.models.dto.ChatDTO;
+import com.actiongroup.actionserver.models.dto.DTOFactory;
+import com.actiongroup.actionserver.models.dto.ResponseWithDTO;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.chats.ChatService;
+import com.actiongroup.actionserver.services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
+@RequestMapping(value = "/chats")
 public class ChatController {
-
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
+    private UserService userService;
     @Autowired
     private ChatService chatService;
-
-    @MessageMapping("/chat")
-    public void processMessage(@Payload Message message, @RequestParam(required = true) Long chatId){
-
-        Chat chat = chatService.findChatByid(chatId);
-        if(chat == null) return;
-
-        message = chatService.saveMsg(message);
-
-
-
-        for(User member: chat.getMembers()){
-            messagingTemplate.convertAndSendToUser(
-                member.getId().toString(), "/messages",
-                new ChatNotification(message.getId(), member.getId(), member.getUsername())
-            ); // Вроде как будет выглядеть типа /user/{member_id}/messages
-
-        }
-
+    @Autowired
+    private DTOFactory dtoFactory;
+    @PostMapping("/")
+    public void createChat(@AuthenticationPrincipal User user,
+                           @RequestBody Chat chat){
+        Set<User> members = new HashSet<>();
+        members.add(user);
+        chat.setMembers(members);
+        chatService.saveChat(chat);
     }
 
+
+    @GetMapping("/")
+    public ResponseEntity<ResponseWithDTO> getChats(@AuthenticationPrincipal User user){
+        Set<Chat> chats = chatService.getChatsByUser(user);
+        if(chats == null) chats = new HashSet<>();
+
+        return new ResponseEntity<>(ResponseWithDTO.create(dtoFactory.ChatsToDtoList(chats), "Chats successfully found"), HttpStatus.OK);
+    }
 }
