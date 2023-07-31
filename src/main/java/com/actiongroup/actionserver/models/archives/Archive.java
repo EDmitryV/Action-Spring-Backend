@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+
 @Data
 @MappedSuperclass
 public abstract class Archive {
@@ -15,7 +16,8 @@ public abstract class Archive {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 

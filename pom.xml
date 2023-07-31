@@ -109,6 +109,20 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>6.0.11</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>6.0.11</version>
+		</dependency>
+
 
 	</dependencies>
 

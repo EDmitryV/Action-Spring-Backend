@@ -9,7 +9,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -41,7 +45,8 @@ public class ArchiveServiceTests {
             Assertions.assertNull(usr.getAudioArchives());
     }
 
-    @Order(1)
+
+    @Order(2)
     @Test
     public void initArchivesFromService(){
         User usr = users.get(0);
@@ -54,7 +59,8 @@ public class ArchiveServiceTests {
     }
 
 
-    @Order(2)
+
+    @Order(3)
     @Test
     public void addSecondArchive(){
         User user = users.get(0);
@@ -62,21 +68,23 @@ public class ArchiveServiceTests {
         archive.setOwner(user);
         archive.setName("второй музык архив");
         archive = musicService.save(archive);
-        Assertions.assertEquals(2, musicService.findByOwner(user).size());
+        Set<MusicArchive> archives = musicService.findByOwner(user);
+        Assertions.assertEquals(2, archives.size());
 
     }
 
-    @Order(2)
+    @Order(4)
     @Test
-    @Disabled
     public void initArchivesFromUser(){
         // ЭТОТ ТЕСТ НЕ ПРОХОДИТ (и не факт, что вообще должен)
         refreshUsers();
         User usr = users.get(0);
         AudioArchive archive = new AudioArchive();
         archive.setOwner(usr);
+
         archive.setName("второй музык архив");
         usr.getAudioArchives().add(archive);
+
         usr = userService.save(usr);
         Assertions.assertEquals(2, musicService.findByOwner(usr).size());
         //Assertions.assertEquals(2, usr.getMusicArchives().size());
