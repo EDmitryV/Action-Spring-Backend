@@ -1,7 +1,7 @@
 package com.actiongroup.actionserver.services.chats;
 
-import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.chats.Message;
+import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.chats.ChatRepository;
 import com.actiongroup.actionserver.repositories.chats.MessageRepository;
