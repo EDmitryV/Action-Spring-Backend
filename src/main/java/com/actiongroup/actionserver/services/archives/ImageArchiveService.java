@@ -1,10 +1,9 @@
 package com.actiongroup.actionserver.services.archives;
 
 import com.actiongroup.actionserver.models.archives.ImageArchive;
-import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.AudioArchive;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.archives.ImageArchiveRepository;
-import com.actiongroup.actionserver.repositories.archives.MusicArchiveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,17 @@ public class ImageArchiveService {
         return imageArchiveRepository.save(arch);
     }
 
-    public void delete(MusicArchive arch){
+    public void delete(AudioArchive arch){
         imageArchiveRepository.deleteById(arch.getId());
     }
+
+    public ImageArchive findById(Long id) {
+        return imageArchiveRepository.findById(id).orElse(null);
+    }
+
+    public boolean existsById(Long archiveId) {
+        return imageArchiveRepository.existsById(archiveId);
+    }
+
+
 }

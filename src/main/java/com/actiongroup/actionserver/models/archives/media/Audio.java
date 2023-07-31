@@ -1,7 +1,6 @@
 package com.actiongroup.actionserver.models.archives.media;
-import com.actiongroup.actionserver.models.archives.MusicArchive;
+import com.actiongroup.actionserver.models.archives.AudioArchive;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -9,9 +8,11 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Music extends Media{
+public class Audio extends Media{
+    @ManyToOne
+    private Image cover;
     @ManyToOne
     @JoinColumn(name = "archive_id", referencedColumnName = "id")
-    private MusicArchive musicArchive;
+    private AudioArchive archive;
 
 }
