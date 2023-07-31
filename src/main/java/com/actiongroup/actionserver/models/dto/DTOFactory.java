@@ -3,6 +3,7 @@ package com.actiongroup.actionserver.models.dto;
 import com.actiongroup.actionserver.models.archives.Archive;
 import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.chats.Message;
+import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.events.Tag;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.chats.ChatService;
@@ -107,5 +108,21 @@ public class DTOFactory {
             arDto.add(ChatToDto(c));
         }
         return new ApiDtoList(arDto);
+    }
+
+
+    public ApiDto toDTO(Event event) {
+        EventDTO dto = new EventDTO();
+        User author = event.getAuthor();
+        if (author != null)
+            dto.setAuthor(this.UserToDto(author, UserDTOSettings.Simple));
+        dto.setHot(event.isHot());
+        dto.setDescription(event.getDescription());
+        dto.setType(event.getType());
+        dto.setName(event.getName());
+        dto.setPrivate(event.isPrivate());
+        dto.setStartsAt(event.getStartsAt());
+        dto.setEndsAt(event.getEndsAt());
+        return dto;
     }
 }
