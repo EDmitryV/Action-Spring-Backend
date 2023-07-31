@@ -1,11 +1,11 @@
 package com.actiongroup.actionserver.models.archives;
 
+import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.geolatte.geom.Circle;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 
 @Data
@@ -21,13 +21,20 @@ public abstract class Archive {
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
-    private String name;
+    @ManyToOne()
+    @JoinColumn(name = "main_event_id", referencedColumnName = "id")
+    private Event mainEvent;
 
+    private String name;
+    private int contentCount;
+    @RequiredArgsConstructor
     public enum Type{
-        Music,
-        Video,
-        Event,
-        Image
+        Audio("audio"),
+        Video("video"),
+        Event("event"),
+        Image("image");
+        @Getter
+        private final String mediaType;
     }
 
 }

@@ -14,6 +14,6 @@ public class Video extends Media{
 
     @ManyToOne
     @JoinColumn(name = "archive_id", referencedColumnName = "id")
-    private VideoArchive videoArchive;
+    private VideoArchive archive;
     private Boolean autoRepeat;
 }

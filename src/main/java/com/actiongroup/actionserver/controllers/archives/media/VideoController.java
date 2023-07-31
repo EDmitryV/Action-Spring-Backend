@@ -1,6 +1,7 @@
 package com.actiongroup.actionserver.controllers.archives.media;
 
 import com.actiongroup.actionserver.models.archives.VideoArchive;
+import com.actiongroup.actionserver.models.archives.media.Image;
 import com.actiongroup.actionserver.models.archives.media.Video;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.archives.VideoArchiveService;
@@ -25,8 +26,6 @@ import java.util.Objects;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping(value = "/video")
 public class VideoController {
-    private final MediaService mediaService;
-
     private final VideoService videoService;
     private final VideoArchiveService videoArchiveService;
 
@@ -41,11 +40,12 @@ public class VideoController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/upload")
     public ResponseEntity<?> uploadVideo(
-            @RequestParam("video") MultipartFile file,
+            @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal User user,
             @RequestParam("name") String name,
             @RequestParam("archive_id") Long id,
-            @RequestParam("auto_repeat") Boolean autoRepeat) throws IOException {
+            @RequestParam("auto_repeat") Boolean autoRepeat
+    ) throws IOException {
         Video video = new Video();
         video.setName(name != null ? name : video.getId().toString());
         video.setAutoRepeat(autoRepeat != null ? autoRepeat : false);
@@ -53,7 +53,7 @@ public class VideoController {
         VideoArchive videoArchive;
         if (id != null && videoArchiveService.existsById(id)) {
             videoArchive = videoArchiveService.findById(id);
-            if(!Objects.equals(videoArchive.getOwner().getId(), user.getId())){
+            if (!Objects.equals(videoArchive.getOwner().getId(), user.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The user is not the owner of the archive.");
             }
         } else {
@@ -61,9 +61,24 @@ public class VideoController {
             videoArchive.setOwner(user);
             videoArchiveService.save(videoArchive);
         }
-        video.setVideoArchive(videoArchive);
+        video.setArchive(videoArchive);
+        videoArchive.setContentCount(videoArchive.getContentCount() + 1);
         video = videoService.save(video);
-        mediaService.saveFile(file, MediaTypesPaths.VIDEO, user, videoArchive, video);
+        //TODO maybe remove this and make cascade?
+//        videoArchiveService.save(videoArchive);
+        videoService.saveWithFile(video, file);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteVideo(@PathVariable Long id, @AuthenticationPrincipal User user){
+        Video video = videoService.findById(id);
+        if(video == null)
+            return ResponseEntity.badRequest().body("Video with id %s doesn't exists".formatted(id));
+        if(!Objects.equals(video.getOwner().getId(), user.getId()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User isn't the owner of video");
+        videoService.delete(video);
+        return ResponseEntity.ok().body("Video is successfully deleted");
     }
 }

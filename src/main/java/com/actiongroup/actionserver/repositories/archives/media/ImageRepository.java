@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
-    public List<Image> findByImageArchive(ImageArchive imageArchive);
+    public List<Image> findByArchive(ImageArchive archive);
 
 }

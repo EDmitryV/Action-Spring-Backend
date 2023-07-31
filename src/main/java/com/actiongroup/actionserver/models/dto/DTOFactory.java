@@ -61,7 +61,8 @@ public class DTOFactory {
 
 
     public ApiDto ArchiveToDto(Archive archive){
-        UserSimpleDTO userDto = (UserSimpleDTO) UserToDto(archive.getOwner(), UserDTOSettings.Simple);
+//        UserSimpleDTO userDto = (UserSimpleDTO) UserToDto(archive.getOwner(), UserDTOSettings.Simple);
+        UserSmallDTO userDto = new UserSmallDTO(archive.getOwner());
         ArchiveDTO dto = new ArchiveDTO(archive);
         dto.setOwner(userDto);
         return dto;

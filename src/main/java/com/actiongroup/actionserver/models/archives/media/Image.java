@@ -13,5 +13,5 @@ public class Image extends Media{
 
     @ManyToOne
     @JoinColumn(name = "archive_id", referencedColumnName = "id")
-    private ImageArchive imageArchive;
+    private ImageArchive archive;
 }
