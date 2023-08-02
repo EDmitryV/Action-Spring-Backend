@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>{
     public List<Review> findByAuthor(User author);
-    public List<Event> findByEvent(Event event);
+    public List<Review> findByEvent(Event event);
+    public List<Review> findByEventAndAuthor(Event event, User author);
 
 }

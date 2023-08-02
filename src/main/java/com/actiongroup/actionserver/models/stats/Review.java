@@ -5,6 +5,9 @@ import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.events.Event;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 public class Review{
@@ -24,5 +27,7 @@ public class Review{
 
     private int rating;
     private String content;
+
+    private LocalDateTime publicationTime;
 }
 
