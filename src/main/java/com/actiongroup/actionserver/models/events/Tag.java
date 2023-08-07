@@ -11,6 +11,8 @@ public class Tag  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    //TODO not required and needs in test
+    private Long parentId;
 
     private String name;
 

@@ -32,10 +32,11 @@ public class ImageController {
     private final ImageArchiveService imageArchiveService;
 
     @GetMapping(value = "/get/{id}", produces = "image/jpg")
-    public ResponseEntity<Resource> getImage(@PathVariable Long id, @RequestHeader("Range") String range) {
+    public ResponseEntity<Resource> getImage(@PathVariable Long id
+    ) {
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.parseMediaType("audio/mp3"))
+                .contentType(MediaType.parseMediaType("image/jpg"))
                 .body(imageService.getImageById(id));
     }
 

@@ -19,22 +19,22 @@ public class ImageArchiveController {
     private final ImageService imageService;
     private final ImageArchiveService imageArchiveService;
 
-    @GetMapping("/content/get/{id}")
-    public ResponseEntity<List<ImageDTO>> getArchiveContent(@PathVariable Long id, @RequestParam("on_page") int onPage, @RequestParam("page") int page) {
-        List<Image> images = imageService.getImagesFromArchive(id, onPage, page);
-        List<ImageDTO> imageDTOs = new ArrayList<>();
-        for (Image image : images) {
-            imageDTOs.add(new ImageDTO(image));
-        }
-        return ResponseEntity
-                .ok()
-                .body(imageDTOs);
-    }
-
-    @GetMapping("/info/get/{id}")
-    public ResponseEntity<ArchiveDTO> getArchiveMetaData(@PathVariable Long id) {
-        return ResponseEntity
-                .ok()
-                .body(new ArchiveDTO(imageArchiveService.findById(id)));
-    }
+//    @GetMapping("/get/{id}")
+//    public ResponseEntity<List<ImageDTO>> getArchiveContent(@PathVariable Long id, @RequestParam("on_page") int onPage, @RequestParam("page") int page) {
+//        List<Image> images = imageService.getImagesFromArchive(id, onPage, page);
+//        List<ImageDTO> imageDTOs = new ArrayList<>();
+//        for (Image image : images) {
+//            imageDTOs.add(new ImageDTO(image));
+//        }
+//        return ResponseEntity
+//                .ok()
+//                .body(imageDTOs);
+//    }
+//
+//    @GetMapping("/info/get/{id}")
+//    public ResponseEntity<ArchiveDTO> getArchiveMetaData(@PathVariable Long id) {
+//        return ResponseEntity
+//                .ok()
+//                .body(new ArchiveDTO(imageArchiveService.findById(id)));
+//    }
 }

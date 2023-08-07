@@ -43,7 +43,8 @@ public Audio findById(Long id){
         }
         //TODO rewrite to load only required from DB (not all)
         List<Audio> audios = findByAudioArchive(audioArchive);
-        return audios.subList(page * onPage, (page + 1) * onPage);
+        audios = audios.subList(page * onPage, Math.min((page + 1) * onPage, audios.size()));
+        return audios;
     }
 
     public void delete(Audio audio) {

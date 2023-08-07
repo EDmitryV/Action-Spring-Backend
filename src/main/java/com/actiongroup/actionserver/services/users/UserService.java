@@ -11,6 +11,9 @@ import com.actiongroup.actionserver.repositories.users.UserRepository;
 import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
 
@@ -19,14 +22,13 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepo;
     private final UserSettingsRepository settingsRepo;
     private final UserRelationRepository relationRepository;
 
 
     public User save(User user) {
-        //TODO check that another user with same email can save in db
         if(user.getRole() == null){
             user.setRole(Role.USER);
         }
@@ -73,5 +75,10 @@ public class UserService {
 
     public User findById(Long id){
         return userRepo.findById(id).orElse(null);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepo.findByUsername(username).orElse(null);
     }
 }

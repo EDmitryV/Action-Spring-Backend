@@ -29,4 +29,8 @@ public class EventsArchiveService {
     public void delete(EventsArchive arch){
         eventArchiveRepository.deleteById(arch.getId());
     }
+
+    public EventsArchive findById(Long id){
+        return eventArchiveRepository.findById(id).orElse(null);
+    }
 }

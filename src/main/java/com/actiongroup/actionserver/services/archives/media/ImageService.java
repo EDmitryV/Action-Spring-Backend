@@ -56,7 +56,7 @@ public class ImageService {
         }
         //TODO rewrite to load only required from DB (not all)
         List<Image> images = findByImageArchive(imageArchive);
-        images = images.subList(page * onPage, (page + 1) * onPage);
+        images = images.subList(page * onPage, Math.min((page + 1) * onPage, images.size()));
         return images;
     }
 
