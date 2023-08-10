@@ -50,10 +50,10 @@ public class TagController {
     @PostMapping("/")
     @Operation(summary = "Create tag", description = "Создание тега")
     public ResponseEntity<ResponseWithDTO> createTag(
-            @RequestParam(name = "parent_id", required = false) Long parent_id,
+//            @RequestParam(name = "parent_id", required = false) Long parent_id,
             @RequestBody Tag tag){
-        if(parent_id != null)
-            tag.setParentTag(eventService.findTagById(parent_id));
+        if(tag.getParentId() != null)
+            tag.setParentTag(eventService.findTagById(tag.getParentId()));
 
         tag = eventService.saveTag(tag);
         return new ResponseEntity<>(ResponseWithDTO.create(new TagDTO(tag), "tag created successfully"),HttpStatus.OK);

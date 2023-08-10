@@ -10,8 +10,6 @@ import lombok.Data;
 @Entity
 public class Audio extends Media{
     @ManyToOne
-    private Image cover;
-    @ManyToOne
     @JoinColumn(name = "archive_id", referencedColumnName = "id")
     private AudioArchive archive;
 

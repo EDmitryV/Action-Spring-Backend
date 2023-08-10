@@ -47,7 +47,6 @@ public class Message extends EntityWithStatus {
     @OneToOne()
     @JoinColumn(name="music_archive_id", referencedColumnName = "id")
     private AudioArchive audioArchive;
-
     private LocalDateTime at;
 
 

@@ -1,6 +1,7 @@
 package com.actiongroup.actionserver.services.auth;
 
 import com.actiongroup.actionserver.models.auth.*;
+import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.repositories.auth.TokenRepository;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.repositories.users.UserRepository;
@@ -45,13 +46,11 @@ public class AuthenticationService {
     }
 
     public AuthenticationSuccessResponse register(RegisterRequest request) {
-
-        var user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
-                .build();
+        User user = new User(
+                request.getUsername(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword()),
+                request.getRole() == null ? Role.USER : request.getRole());
         var savedUser = userService.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);

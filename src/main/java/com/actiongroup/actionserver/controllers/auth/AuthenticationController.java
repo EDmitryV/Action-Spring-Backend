@@ -32,7 +32,7 @@ public class AuthenticationController {
     }
     return ResponseEntity.ok(authService.register(request));
   }
-  @PostMapping("/authenticate")
+  @PostMapping("/authentication")
   public ResponseEntity<AuthenticationSuccessResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {

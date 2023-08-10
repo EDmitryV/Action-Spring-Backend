@@ -25,22 +25,24 @@ public class VideoArchiveController {
     private final VideoService videoService;
     private final VideoArchiveService videoArchiveService;
 
-    @GetMapping("/content/get/{id}")
-    public ResponseEntity<List<VideoDTO>> getArchiveContent(@PathVariable Long id, @RequestParam("on_page") int onPage, @RequestParam("page") int page) {
-        List<Video> videos = videoService.getVideosFromArchive(id, onPage, page);
-        List<VideoDTO> videoDTOs = new ArrayList<>();
-        for (Video video : videos) {
-            videoDTOs.add(new VideoDTO(video));
-        }
-        return ResponseEntity
-                .ok()
-                .body(videoDTOs);
-    }
 
-    @GetMapping("/info/get/{id}")
-    public ResponseEntity<ArchiveDTO> getArchiveMetaData(@PathVariable Long id) {
-        return ResponseEntity
-                .ok()
-                .body(new ArchiveDTO(videoArchiveService.findById(id)));
-    }
+//    @GetMapping("/content/get/{id}")
+//    public ResponseEntity<List<VideoDTO>> getArchiveContent(@PathVariable Long id, @RequestParam("on_page") int onPage, @RequestParam("page") int page) {
+//        List<Video> videos = videoService.getVideosFromArchive(id, onPage, page);
+//        List<VideoDTO> videoDTOs = new ArrayList<>();
+//        for (Video video : videos) {
+//            videoDTOs.add(new VideoDTO(video));
+//        }
+//        return ResponseEntity
+//                .ok()
+//                .body(videoDTOs);
+//    }
+//
+//    @GetMapping("/info/get/{id}")
+//    public ResponseEntity<ArchiveDTO> getArchiveMetaData(@PathVariable Long id) {
+//        return ResponseEntity
+//                .ok()
+//                .body(new ArchiveDTO(videoArchiveService.findById(id)));
+//    }
+
 }

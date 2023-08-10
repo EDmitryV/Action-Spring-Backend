@@ -13,7 +13,6 @@ import org.geolatte.geom.M;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,11 +37,11 @@ public class DTOFactory {
     public ApiDto UserToDto(User user, UserDTOSettings settings){
         switch (settings){
             case Simple:
-                return new UserSimpleDTO(user);
+                return new UserDTO(user);
 
 
             case Large:
-                UserLargeDTO dto =  new UserLargeDTO(user);
+                UserFullDTO dto =  new UserFullDTO(user);
                 Set<User> friendsList= relationshipService.getFriends(user);
                 if(friendsList==null) friendsList = new HashSet<>();
                 for(User friend:friendsList){
@@ -62,7 +61,9 @@ public class DTOFactory {
 
     public ApiDto ArchiveToDto(Archive archive){
 //        UserSimpleDTO userDto = (UserSimpleDTO) UserToDto(archive.getOwner(), UserDTOSettings.Simple);
-        UserSmallDTO userDto = new UserSmallDTO(archive.getOwner());
+
+        UserDTO userDto = new UserDTO(archive.getOwner());
+
         ArchiveDTO dto = new ArchiveDTO(archive);
         dto.setOwner(userDto);
         return dto;

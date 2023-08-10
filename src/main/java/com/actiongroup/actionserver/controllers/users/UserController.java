@@ -1,7 +1,7 @@
 package com.actiongroup.actionserver.controllers.users;
 
-
 import com.actiongroup.actionserver.models.archives.ImageArchive;
+
 import com.actiongroup.actionserver.models.dto.*;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.archives.AudioArchiveService;
@@ -44,7 +44,7 @@ public class UserController {
     @PutMapping("/edit")
     //TODO write descriptions on english
     @Operation(summary = "Edit authenticated user", description = "Обновляет все поля у пользоваетля")
-    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserSimpleDTO userdto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserFullDTO userdto, @AuthenticationPrincipal User user) {
         User userWithSameUsername = userService.findByUsername(userdto.getUsername());
         User userWithSameEmail = userService.findByEmail(userdto.getEmail());
         //Just for fun?.. (I don't understand why ObjectWithCopyableFields can't access to id of User anyway)
@@ -66,40 +66,40 @@ public class UserController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "user successfully found"),
+            @ApiResponse(responseCode = "400", description = "User was not found")
+    })
+    @Operation(summary = "Get user by id", description = "Возвращает короткое описание пользователя по его ID")
+    public ResponseEntity<ResponseWithDTO> getUser(
+            @PathVariable Long id) {
+        return getUserResponse(userService.findById(id), DTOFactory.UserDTOSettings.Simple);
+    }
+
+    @GetMapping("/get-full/{id}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user successfully found"),
             @ApiResponse(responseCode = "400", description = "User was not found")
     })
     @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUser(
-            @PathVariable Long id,
-            @RequestParam(required = false) boolean all) {
+    public ResponseEntity<ResponseWithDTO> getUserFull(
+            @PathVariable Long id) {
+        return getUserResponse(userService.findById(id), DTOFactory.UserDTOSettings.Large);
+    }
 
-        User user = userService.findById(id);
-        DTOFactory.UserDTOSettings settings = all ?
-                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
-
-        return getUserResponse(user, settings);
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me-full")
+    public ResponseEntity<ResponseWithDTO> getAuthenticatedUserFull(
+            @AuthenticationPrincipal User user) {
+        return getUserResponse(user, DTOFactory.UserDTOSettings.Large);
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me-full")
     public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
-            @RequestParam(required = false) boolean all,
             @AuthenticationPrincipal User user) {
-
-        DTOFactory.UserDTOSettings settings = all ?
-                DTOFactory.UserDTOSettings.Large : DTOFactory.UserDTOSettings.Simple;
-
-        return getUserResponse(user, settings);
-    }
-
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me")
-    public ResponseEntity<UserSmallDTO> getAuthenticatedUser(
-            @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok().body(new UserSmallDTO(user));
+        return getUserResponse(user, DTOFactory.UserDTOSettings.Simple);
     }
 
     public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings) {

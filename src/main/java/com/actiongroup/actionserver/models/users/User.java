@@ -26,7 +26,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class User extends EntityWithStatus implements UserDetails {
-
+public User(String username, String email, String password, Role role){
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.role = role;
+}
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false, unique = true)
@@ -48,26 +53,23 @@ public class User extends EntityWithStatus implements UserDetails {
     private Role role;
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
     private UserSettings settings;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id", referencedColumnName = "id")
+    private Set<Chat> chats = new HashSet<>();
 
-//    @ManyToMany(mappedBy = "members",fetch = FetchType.EAGER)
-//    //@JoinColumn(name = "chat_id", referencedColumnName = "id")
-//    private Set<Chat> chats;
-
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<AudioArchive> audioArchives;
 
 
-
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<ImageArchive> imageArchives;
 
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<VideoArchive> videoArchives;
 
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<EventsArchive> eventsArchives;
 
 

@@ -84,7 +84,6 @@ public class ArchiveServiceTests {
 
         archive.setName("второй музык архив");
         usr.getAudioArchives().add(archive);
-
         usr = userService.save(usr);
         Assertions.assertEquals(2, musicService.findByOwner(usr).size());
         //Assertions.assertEquals(2, usr.getMusicArchives().size());

@@ -13,11 +13,11 @@ public abstract class Media extends ObjectWithCopyableFields {
     @Id
     @GeneratedValue
     private Long id;
-    //    @Column(unique = true)
-    //    protected String url;
     @NotNull
     protected String name;
     @NotNull
     @ManyToOne
     protected User owner;
+    @ManyToOne
+    protected Image cover;
 }
