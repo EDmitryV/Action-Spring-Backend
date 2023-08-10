@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 public class ArchiveDTO implements ApiDto {
 
+
     private long id;
     private UserDTO owner;
     private String name;
@@ -50,6 +51,7 @@ public class ArchiveDTO implements ApiDto {
             for(Event event : ((EventsArchive) archive).getEvents()){
                 content.add(new MediaDTO(event));
             }
+
         }
     }
 }

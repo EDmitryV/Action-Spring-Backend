@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.controllers.users;
 
+import com.actiongroup.actionserver.models.archives.ImageArchive;
 
 import com.actiongroup.actionserver.models.dto.*;
 import com.actiongroup.actionserver.models.users.User;
@@ -95,7 +96,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me")
+    @GetMapping("/me-full")
     public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
             @AuthenticationPrincipal User user) {
         return getUserResponse(user, DTOFactory.UserDTOSettings.Simple);

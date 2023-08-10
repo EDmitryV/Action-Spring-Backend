@@ -19,6 +19,7 @@ public class ImageArchiveController {
     private final ImageService imageService;
     private final ImageArchiveService imageArchiveService;
 
+
 //    @GetMapping("/get/{id}")
 //    public ResponseEntity<List<ImageDTO>> getArchiveContent(@PathVariable Long id, @RequestParam("on_page") int onPage, @RequestParam("page") int page) {
 //        List<Image> images = imageService.getImagesFromArchive(id, onPage, page);

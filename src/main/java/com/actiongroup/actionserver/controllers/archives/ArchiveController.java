@@ -3,7 +3,9 @@ package com.actiongroup.actionserver.controllers.archives;
 import com.actiongroup.actionserver.models.archives.*;
 import com.actiongroup.actionserver.models.archives.media.Image;
 import com.actiongroup.actionserver.models.dto.*;
+
 import com.actiongroup.actionserver.models.requests.CreateArchiveRequestBody;
+
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.archives.EventsArchiveService;
 import com.actiongroup.actionserver.services.archives.ImageArchiveService;
@@ -48,6 +50,7 @@ public class ArchiveController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/video/create")
+
     public ResponseEntity<ResponseWithDTO> createVideoArchive(@RequestBody CreateArchiveRequestBody body,
                                                               @AuthenticationPrincipal User user) {
         VideoArchive videoArchive = new VideoArchive();
@@ -165,4 +168,5 @@ public class ArchiveController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(new ArchiveDTO(archive));
     }
+
 }
