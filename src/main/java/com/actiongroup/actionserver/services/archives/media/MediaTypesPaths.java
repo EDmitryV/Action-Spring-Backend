@@ -3,13 +3,10 @@ package com.actiongroup.actionserver.services.archives.media;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @RequiredArgsConstructor
 public enum MediaTypesPaths {
     ROOT("data"),
-    MUSIC("data/music"),
+    AUDIO("data/audio"),
     VIDEO("data/video"),
     IMAGE("data/image");
     @Getter

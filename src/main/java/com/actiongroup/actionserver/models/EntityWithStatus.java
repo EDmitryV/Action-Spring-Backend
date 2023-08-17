@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 @Data
 @NoArgsConstructor
-public class EntityWithStatus extends ObjectWithCopyableFields {
+public class EntityWithStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;

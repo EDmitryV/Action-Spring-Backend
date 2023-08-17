@@ -24,7 +24,7 @@ public Audio findById(Long id){
         Audio audio = audioRepository.findById(id).orElse(null);
         if (audio == null)
             throw new IllegalArgumentException("Audio file with that id doesn't exists: " + id);
-        return mediaService.load(audio.getOwner(), audio.getArchive(), audio, MediaTypesPaths.MUSIC);
+        return mediaService.load(audio.getOwner(), audio.getArchive(), audio, MediaTypesPaths.AUDIO);
     }
 
     public Audio save(Audio audio) {
@@ -50,7 +50,7 @@ public Audio findById(Long id){
     public void delete(Audio audio) {
         //TODO check for work
         audio.getArchive().setContentCount(audio.getArchive().getContentCount() - 1);
-        mediaService.delete(audio.getOwner(), audio.getArchive(), audio, MediaTypesPaths.MUSIC);
+        mediaService.delete(audio.getOwner(), audio.getArchive(), audio, MediaTypesPaths.AUDIO);
         audioRepository.delete(audio);
     }
 }

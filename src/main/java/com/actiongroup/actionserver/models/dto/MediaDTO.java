@@ -12,37 +12,44 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class MediaDTO {
     private long id;
     private String name;
     private UserDTO owner;
     private long archiveId;
-    private Boolean autoRepeat;
+    //is null only for image
     private long coverId;
+    private String type;
+    //is null for everyone except video
+    private boolean autoRepeat;
 
     public MediaDTO(Media media) {
         Class<? extends Media> mediaClass = media.getClass();
         id = media.getId();
         name = media.getName();
-        owner = new UserDTO(media.getOwner());
+        owner = new UserDTO(media.getOwner(), false);
         coverId = media.getCover().getId();
+        //TODO add type
         if (mediaClass == Audio.class) {
             Audio audio = (Audio) media;
             archiveId = audio.getArchive().getId();
             coverId = audio.getCover().getId();
+            type = "audio";
         } else if (mediaClass == Image.class) {
             Image image = (Image) media;
             archiveId = image.getArchive().getId();
+            type = "image";
         } else if (mediaClass == Video.class) {
             Video video = (Video) media;
             archiveId = video.getArchive().getId();
             autoRepeat = video.getAutoRepeat();
             coverId = video.getCover().getId();
+            type = "video";
         } else if (mediaClass == Event.class) {
             Event event = (Event) media;
             archiveId = event.getArchive().getId();
             coverId = event.getCover().getId();
+            type = "event";
         }
     }
 }

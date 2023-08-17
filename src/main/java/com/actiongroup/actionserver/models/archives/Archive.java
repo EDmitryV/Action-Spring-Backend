@@ -38,15 +38,4 @@ public abstract class Archive {
     private String name;
     private long contentCount = 0;
 
-    @RequiredArgsConstructor
-    public enum Type {
-
-        Audio("audio"),
-        Video("video"),
-        Event("event"),
-        Image("image");
-        @Getter
-        private final String mediaType;
-    }
-
 }

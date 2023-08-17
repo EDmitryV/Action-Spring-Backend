@@ -1,12 +1,13 @@
 package com.actiongroup.actionserver.models.events;
 
-import com.actiongroup.actionserver.models.EntityWithStatus;
 import com.actiongroup.actionserver.models.archives.EventsArchive;
 import com.actiongroup.actionserver.models.archives.ImageArchive;
 import com.actiongroup.actionserver.models.archives.AudioArchive;
 import com.actiongroup.actionserver.models.archives.VideoArchive;
 import com.actiongroup.actionserver.models.archives.media.Image;
 import com.actiongroup.actionserver.models.archives.media.Media;
+import com.actiongroup.actionserver.models.stats.Statistics;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,20 +25,15 @@ public class Event extends Media {
     public Event() {
     }
 
-
-    private String type;
-
-    private String name;
-
     private String description;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime startsAt;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime endsAt;
 
     private boolean isPrivate;
 
-    private boolean isHot; // горячая новость
+    private boolean isHotNews;
 
     @Column(columnDefinition = "geometry(Point,4326)")
     private Point point;
@@ -73,4 +69,10 @@ public class Event extends Media {
     @ManyToOne()
     @JoinColumn(name = "archive_id", referencedColumnName = "id")
     private EventsArchive archive;
+
+    @ManyToMany
+    private Set<Tag> tags;
+
+    @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Statistics statistics;
 }

@@ -1,6 +1,5 @@
 package com.actiongroup.actionserver.models.events;
 
-import com.actiongroup.actionserver.models.dto.ApiDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,11 +21,5 @@ public class Tag  {
     @JoinColumn(name="parent_tag_id", referencedColumnName = "id")
     private Tag parentTag;
 
-    @Enumerated(EnumType.STRING)
-    private Icon icon;
-
-
-    enum Icon{
-        None
-    }
+    private String iconCode;
 }

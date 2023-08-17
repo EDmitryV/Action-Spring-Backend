@@ -2,6 +2,7 @@ package com.actiongroup.actionserver.controllers.archives;
 
 import com.actiongroup.actionserver.models.archives.*;
 import com.actiongroup.actionserver.models.archives.media.Image;
+import com.actiongroup.actionserver.models.archives.media.MediaType;
 import com.actiongroup.actionserver.models.dto.*;
 
 import com.actiongroup.actionserver.models.requests.CreateArchiveRequestBody;
@@ -11,6 +12,7 @@ import com.actiongroup.actionserver.services.archives.EventsArchiveService;
 import com.actiongroup.actionserver.services.archives.ImageArchiveService;
 import com.actiongroup.actionserver.services.archives.AudioArchiveService;
 import com.actiongroup.actionserver.services.archives.VideoArchiveService;
+import com.actiongroup.actionserver.services.archives.media.ImageService;
 import com.actiongroup.actionserver.services.users.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @RestController
@@ -34,139 +37,161 @@ public class ArchiveController {
     private final AudioArchiveService audioArchiveService;
     private final VideoArchiveService videoArchiveService;
     private final EventsArchiveService eventArchiveService;
-    private final UserService userService;
-    private final DTOFactory dtoFactory;
+    private final ImageService imageService;
 
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/audio/create")
-    public ResponseEntity<ResponseWithDTO> createAudioArchive(@RequestBody CreateArchiveRequestBody body,
-                                                              @AuthenticationPrincipal User user) {
+    @PostMapping("/create")
+    public ResponseEntity<ArchiveDTO> createArchive(@RequestBody CreateArchiveRequestBody body, @AuthenticationPrincipal User user) {
+        if (body.getName() == null || body.getName().equals("")) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return switch (body.getType()) {
+            case "audio" -> createAudioArchive(body, user);
+            case "video" -> createVideoArchive(body, user);
+            case "image" -> createImageArchive(body, user);
+            case "event" -> createEventArchive(body, user);
+            default -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        };
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/create/audio")
+    public ResponseEntity<ArchiveDTO> createAudioArchive(@RequestBody CreateArchiveRequestBody body, @AuthenticationPrincipal User user) {
         AudioArchive audioArchive = new AudioArchive();
         audioArchive.setName(body.getName());
         audioArchive.setOwner(user);
-        return saveArchive(audioArchive, Archive.Type.Audio);
+        return saveArchive(audioArchive, MediaType.Audio);
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/video/create")
-
-    public ResponseEntity<ResponseWithDTO> createVideoArchive(@RequestBody CreateArchiveRequestBody body,
-                                                              @AuthenticationPrincipal User user) {
+    @PostMapping("/create/video")
+    public ResponseEntity<ArchiveDTO> createVideoArchive(@RequestBody CreateArchiveRequestBody body, @AuthenticationPrincipal User user) {
         VideoArchive videoArchive = new VideoArchive();
         videoArchive.setName(body.getName());
         videoArchive.setOwner(user);
-        return saveArchive(videoArchive, Archive.Type.Video);
+        return saveArchive(videoArchive, MediaType.Video);
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/event/create")
-    public ResponseEntity<ResponseWithDTO> createEventArchive(@AuthenticationPrincipal User user,
-                                                              @RequestBody CreateArchiveRequestBody body) {
+    @PostMapping("/create/event")
+    public ResponseEntity<ArchiveDTO> createEventArchive(@RequestBody CreateArchiveRequestBody body, @AuthenticationPrincipal User user) {
         EventsArchive eventsArchive = new EventsArchive();
         eventsArchive.setName(body.getName());
         eventsArchive.setOwner(user);
-        return saveArchive(eventsArchive, Archive.Type.Event);
+        return saveArchive(eventsArchive, MediaType.Event);
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/image/create")
-    public ResponseEntity<ResponseWithDTO> createImageArchive(@AuthenticationPrincipal User user,
-                                                              @RequestBody CreateArchiveRequestBody body
-    ) {
+    @PostMapping("/create/image")
+    public ResponseEntity<ArchiveDTO> createImageArchive(@RequestBody CreateArchiveRequestBody body, @AuthenticationPrincipal User user) {
         ImageArchive imageArchive = new ImageArchive();
         imageArchive.setName(body.getName());
         imageArchive.setOwner(user);
-        return saveArchive(imageArchive, Archive.Type.Image);
+        return saveArchive(imageArchive, MediaType.Image);
     }
 
-    private ResponseEntity<ResponseWithDTO> saveArchive(Archive archive, Archive.Type type) {
-        switch (type) {
-            case Audio:
-                archive = audioArchiveService.save((AudioArchive) archive);
-                break;
-            case Image:
-                archive = imageArchiveService.save((ImageArchive) archive);
-                break;
-            case Event:
-                archive = eventArchiveService.save((EventsArchive) archive);
-                break;
-            case Video:
-                archive = videoArchiveService.save((VideoArchive) archive);
-                break;
-
-            default:
-                return new ResponseEntity<>(ResponseWithDTO.create(null, "smth went wrong"), HttpStatus.BAD_REQUEST);
-
+    private ResponseEntity<ArchiveDTO> saveArchive(Archive archive, MediaType mediaType) {
+        switch (mediaType) {
+            case Audio -> archive = audioArchiveService.save((AudioArchive) archive);
+            case Image -> archive = imageArchiveService.save((ImageArchive) archive);
+            case Event -> archive = eventArchiveService.save((EventsArchive) archive);
+            case Video -> archive = videoArchiveService.save((VideoArchive) archive);
         }
-        ApiDto dto = dtoFactory.ArchiveToDto(archive);
-        return new ResponseEntity<>(ResponseWithDTO.create(dto, "successful"), HttpStatus.OK);
+        return new ResponseEntity<>(new ArchiveDTO(archive, false), HttpStatus.OK);
     }
 
-
-    @GetMapping("/audio/get/{user_id}")
-    public ResponseEntity<ResponseWithDTO> getArchiveAudio(@PathVariable("user_id") Long user_id) {
-        User user = userService.findById(user_id);
-        if (user == null)
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "user with id " + user_id + " not found"), HttpStatus.BAD_REQUEST);
-
-        Set<AudioArchive> archs = audioArchiveService.findByOwner(user);
-        return new ResponseEntity<>(ResponseWithDTO.create(dtoFactory.ArchivesToDtoList(archs), "successfully"), HttpStatus.OK);
-    }
-
-    @GetMapping("/event/get/{user_id}")
-    public ResponseEntity<ResponseWithDTO> getArchiveEvent(@PathVariable("user_id") Long user_id) {
-        User user = userService.findById(user_id);
-        if (user == null)
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "user with id " + user_id + " not found"), HttpStatus.BAD_REQUEST);
-        Set<EventsArchive> archs = eventArchiveService.findByOwner(user);
-        return new ResponseEntity<>(ResponseWithDTO.create(dtoFactory.ArchivesToDtoList(archs), "successfully"), HttpStatus.OK);
-    }
-
-    @GetMapping("/image/get/{user_id}")
-    public ResponseEntity<ResponseWithDTO> getArchiveImage(@PathVariable("user_id") Long user_id) {
-        User user = userService.findById(user_id);
-        if (user == null)
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "user with id " + user_id + " not found"), HttpStatus.BAD_REQUEST);
-        Set<ImageArchive> archs = imageArchiveService.findByOwner(user);
-        return new ResponseEntity<>(ResponseWithDTO.create(dtoFactory.ArchivesToDtoList(archs), "successfully"), HttpStatus.OK);
+    @GetMapping("/{archiveType}/get/{archiveId}")
+    public ResponseEntity<ArchiveDTO> getArchiveById(@PathVariable("archiveType") String archiveType, @PathVariable("archiveId") Long archiveId) {
+        switch (archiveType) {
+            case "audio" -> {
+                AudioArchive audioArchive = audioArchiveService.findById(archiveId);
+                if (audioArchive == null)
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ArchiveDTO(audioArchive, true), HttpStatus.OK);
+            }
+            case "video" -> {
+                VideoArchive videoArchive = videoArchiveService.findById(archiveId);
+                if (videoArchive == null)
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ArchiveDTO(videoArchive, true), HttpStatus.OK);
+            }
+            case "image" -> {
+                ImageArchive imageArchive = imageArchiveService.findById(archiveId);
+                if (imageArchive == null)
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ArchiveDTO(imageArchive, true), HttpStatus.OK);
+            }
+            case "event" -> {
+                EventsArchive eventsArchive = eventArchiveService.findById(archiveId);
+                if (eventsArchive == null)
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ArchiveDTO(eventsArchive, true), HttpStatus.OK);
+            }
+            default -> {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        }
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/get-all-archives/{user_id}")
-    public ResponseEntity<List<ArchiveDTO>> getAllMyArchives(@PathVariable Long user_id) {
-        User user = userService.findById(user_id);
-        if (user == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        List<Archive> archives = new ArrayList<>();
-        archives.addAll(user.getAudioArchives());
-        archives.addAll(user.getVideoArchives());
-        archives.addAll(user.getImageArchives());
-        List<ArchiveDTO> archiveDTOs = new ArrayList<>();
-        for (Archive archive : archives) {
-            archiveDTOs.add(new ArchiveDTO(archive));
+    @PutMapping("/update")
+    public ResponseEntity<ArchiveDTO> updateArchive(@AuthenticationPrincipal User user, @RequestBody ArchiveDTO archive) {
+        Archive oldArchive = switch (archive.getType()) {
+            case "audio" -> audioArchiveService.findById(archive.getId());
+            case "video" -> videoArchiveService.findById(archive.getId());
+            case "image" -> imageArchiveService.findById(archive.getId());
+            case "event" -> eventArchiveService.findById(archive.getId());
+            default -> null;
+        };
+        if (oldArchive == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        if(!Objects.equals(oldArchive.getOwner().getId(), user.getId()))
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        oldArchive.setName(archive.getName());
+        if (oldArchive.getCover().getId() != archive.getCoverId()) {
+            Image image = imageService.findById(archive.getCoverId());
+            if (image == null)
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            oldArchive.setCover(image);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(archiveDTOs);
+        return switch (archive.getType()) {
+            case "audio" ->
+                    new ResponseEntity<>(new ArchiveDTO(audioArchiveService.save((AudioArchive) oldArchive), false), HttpStatus.OK);
+            case "video" ->
+                    new ResponseEntity<>(new ArchiveDTO(videoArchiveService.save((VideoArchive) oldArchive), false), HttpStatus.OK);
+            case "image" ->
+                    new ResponseEntity<>(new ArchiveDTO(imageArchiveService.save((ImageArchive) oldArchive), false), HttpStatus.OK);
+            case "event" ->
+                    new ResponseEntity<>(new ArchiveDTO(eventArchiveService.save((EventsArchive) oldArchive), false), HttpStatus.OK);
+            default -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        };
     }
 
-    @GetMapping("/get-full/{archive_id}")
-    public ResponseEntity<ArchiveDTO> getFullArchiveById(@PathVariable Long archive_id, @RequestParam("type") String type) {
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{archiveType}/delete/{archiveId}")
+    public ResponseEntity<String> deleteByArchiveTypeAndId(@PathVariable("archiveType") String archiveType, @PathVariable("archiveId") Long archiveId, @AuthenticationPrincipal User user) {
         Archive archive;
-        switch (type) {
-            case "audio":
-                archive = audioArchiveService.findById(archive_id);
-                break;
-            case "image":
-                archive = imageArchiveService.findById(archive_id);
-                break;
-            case "video":
-                archive = videoArchiveService.findById(archive_id);
-                break;
-            default:
-                archive = eventArchiveService.findById(archive_id);
-                break;
+        switch (archiveType) {
+            case "audio" -> archive = audioArchiveService.findById(archiveId);
+            case "video" -> archive = videoArchiveService.findById(archiveId);
+            case "image" -> archive = imageArchiveService.findById(archiveId);
+            case "event" -> archive = eventArchiveService.findById(archiveId);
+            default -> {
+                return new ResponseEntity<>("Error: wrong type of archive", HttpStatus.BAD_REQUEST);
+            }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(new ArchiveDTO(archive));
+        if (archive == null)
+            return new ResponseEntity<>("Error: archive with this id doesn't exists", HttpStatus.BAD_REQUEST);
+        if (!Objects.equals(archive.getOwner().getId(), user.getId())) {
+            return new ResponseEntity<>("Error: you are not the owner of archive", HttpStatus.FORBIDDEN);
+        }
+        switch (archiveType) {
+            case "audio" -> audioArchiveService.delete((AudioArchive) archive);
+            case "video" -> videoArchiveService.delete((VideoArchive) archive);
+            case "image" -> imageArchiveService.delete((ImageArchive) archive);
+            case "event" -> eventArchiveService.delete((EventsArchive) archive);
+        }
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
-
 }

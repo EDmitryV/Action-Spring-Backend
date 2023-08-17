@@ -1,5 +1,6 @@
 package com.actiongroup.actionserver.services.archives;
 
+import com.actiongroup.actionserver.models.archives.ImageArchive;
 import com.actiongroup.actionserver.models.archives.VideoArchive;
 import com.actiongroup.actionserver.models.archives.media.Video;
 import com.actiongroup.actionserver.repositories.archives.VideoArchiveRepository;
@@ -23,5 +24,9 @@ public class VideoArchiveService {
             videoArchive.setName(videoArchive.getId().toString());
         }
         return videoArchiveRepository.save(videoArchive);
+    }
+
+    public void delete(VideoArchive arch){
+        videoArchiveRepository.deleteById(arch.getId());
     }
 }

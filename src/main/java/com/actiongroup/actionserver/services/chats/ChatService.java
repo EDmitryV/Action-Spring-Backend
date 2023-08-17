@@ -49,4 +49,8 @@ public class ChatService {
     public Set<Chat> getChatsByUser(User member){
         return chatRepository.findByMembers(member);
     }
+
+    public Chat findById(Long id) {
+        return chatRepository.findById(id).orElse(null);
+    }
 }

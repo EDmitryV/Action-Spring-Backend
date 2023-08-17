@@ -8,8 +8,13 @@ import com.actiongroup.actionserver.models.archives.VideoArchive;
 import com.actiongroup.actionserver.models.archives.media.Image;
 import com.actiongroup.actionserver.models.chats.Chat;
 import com.actiongroup.actionserver.models.auth.Token;
+import com.actiongroup.actionserver.models.dto.UserDTO;
+import com.actiongroup.actionserver.repositories.archives.media.ImageRepository;
+import com.actiongroup.actionserver.services.archives.media.ImageService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,12 +31,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class User extends EntityWithStatus implements UserDetails {
-public User(String username, String email, String password, Role role){
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.role = role;
-}
+    public User(String username, String email, String password, Role role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false, unique = true)
@@ -39,6 +45,7 @@ public User(String username, String email, String password, Role role){
     private String firstname;
     private String lastname;
     private String phoneNumber;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
     @ManyToOne
     private Image iconImage;
@@ -57,6 +64,18 @@ public User(String username, String email, String password, Role role){
     @JoinColumn(name = "chat_id", referencedColumnName = "id")
     private Set<Chat> chats = new HashSet<>();
 
+    @OneToMany(orphanRemoval = true, mappedBy = "subscriber", fetch = FetchType.LAZY)
+    private Set<SubscriberToSubscriptionRelation> subscriptions;
+
+    @OneToMany(orphanRemoval = true, mappedBy = "subscription", fetch = FetchType.LAZY)
+    private Set<SubscriberToSubscriptionRelation> subscribers;
+
+    @OneToMany(orphanRemoval = true, mappedBy = "blocker", fetch = FetchType.LAZY)
+    private Set<BlockerToBlockedRelation> blocked;
+
+    @OneToMany(orphanRemoval = true, mappedBy = "blocked", fetch = FetchType.LAZY)
+    private Set<BlockerToBlockedRelation> blockers;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<AudioArchive> audioArchives;
 
@@ -71,7 +90,6 @@ public User(String username, String email, String password, Role role){
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<EventsArchive> eventsArchives;
-
 
 
 
@@ -101,4 +119,5 @@ public User(String username, String email, String password, Role role){
     public boolean isEnabled() {
         return true;
     }
+
 }

@@ -27,7 +27,7 @@ public class ImageArchiveService {
         return imageArchiveRepository.save(arch);
     }
 
-    public void delete(AudioArchive arch){
+    public void delete(ImageArchive arch){
         imageArchiveRepository.deleteById(arch.getId());
     }
 

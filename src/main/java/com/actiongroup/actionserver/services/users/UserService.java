@@ -4,9 +4,8 @@ package com.actiongroup.actionserver.services.users;
 import com.actiongroup.actionserver.models.users.Role;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.models.users.UserSettings;
-import com.actiongroup.actionserver.repositories.users.RoleRepository;
-import com.actiongroup.actionserver.repositories.users.UserRepository;
-import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
+import com.actiongroup.actionserver.repositories.users.BlockerToBlockedRelationRepository;
+import com.actiongroup.actionserver.repositories.users.SubscriberToSubscriptionRelationRepository;
 import com.actiongroup.actionserver.repositories.users.UserRepository;
 import com.actiongroup.actionserver.repositories.users.UserSettingsRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.actiongroup.actionserver.repositories.user.UserRelationRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,7 +23,8 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepo;
     private final UserSettingsRepository settingsRepo;
-    private final UserRelationRepository relationRepository;
+    private final BlockerToBlockedRelationRepository blockerToBlockedRelationRepo;
+    private final SubscriberToSubscriptionRelationRepository subscriberToSubscriptionRelationRepo;
 
 
     public User save(User user) {
@@ -51,11 +50,15 @@ public class UserService implements UserDetailsService {
     }
 
     public void deleteUser(User user){
-        //deleteUserSettings(settingsRepo.findByUser(user).orElse(null));
-        relationRepository.deleteAll(relationRepository.findBySourceUserOrTargetUser(user,user));
-        if(user!=null)
-            userRepo.deleteById(user.getId());
-
+        var subscribers = user.getSubscribers();
+        subscriberToSubscriptionRelationRepo.deleteAll(subscribers);
+        var subscriptions = user.getSubscriptions();
+        subscriberToSubscriptionRelationRepo.deleteAll(subscriptions);
+        var blocked = user.getBlocked();
+        blockerToBlockedRelationRepo.deleteAll(blocked);
+        var blockers = user.getBlockers();
+        blockerToBlockedRelationRepo.deleteAll(blockers);
+        userRepo.delete(user);
     }
 
     private void deleteUserSettings(UserSettings settings){

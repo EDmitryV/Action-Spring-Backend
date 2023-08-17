@@ -1,24 +1,25 @@
 package com.actiongroup.actionserver.models.dto;
 
 import com.actiongroup.actionserver.models.events.Tag;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@Component
+
 @Data
-@NoArgsConstructor
-public class TagDTO
-        extends Tag
-        implements ApiDto {
+public class TagDTO{
+    private Long id;
+    private String name;
+    private Long parentId;
+    private boolean isDeprecated;
+    private String iconCode;
+
 
     public TagDTO(Tag tag){
-        setId(tag.getId());
-        setParentTag(tag.getParentTag());
-        setName(tag.getName());
-        setIcon(tag.getIcon());
-        setDeprecated(tag.isDeprecated());
-
+     id = tag.getId();
+     name = tag.getName();
+     parentId = tag.getParentId();
+     isDeprecated = tag.isDeprecated();
+     iconCode = tag.getIconCode();
     }
 }

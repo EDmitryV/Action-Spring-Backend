@@ -14,8 +14,8 @@ public class Statistics {
     @GeneratedValue
     private long id;
 
-    @OneToOne()
-    @JoinColumn(name="event_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="event_id")
     private Event event;
 
     private Float average;

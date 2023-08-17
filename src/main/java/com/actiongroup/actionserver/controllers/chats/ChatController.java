@@ -1,10 +1,7 @@
 package com.actiongroup.actionserver.controllers.chats;
 
 import com.actiongroup.actionserver.models.chats.Chat;
-import com.actiongroup.actionserver.models.dto.ApiDto;
 import com.actiongroup.actionserver.models.dto.ChatDTO;
-import com.actiongroup.actionserver.models.dto.DTOFactory;
-import com.actiongroup.actionserver.models.dto.ResponseWithDTO;
 import com.actiongroup.actionserver.models.users.User;
 import com.actiongroup.actionserver.services.chats.ChatService;
 import com.actiongroup.actionserver.services.users.UserService;
@@ -18,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -28,8 +27,6 @@ public class ChatController {
     private UserService userService;
     @Autowired
     private ChatService chatService;
-    @Autowired
-    private DTOFactory dtoFactory;
     @PostMapping("/")
     public void createChat(@AuthenticationPrincipal User user,
                            @RequestBody Chat chat){
@@ -41,10 +38,13 @@ public class ChatController {
 
 
     @GetMapping("/")
-    public ResponseEntity<ResponseWithDTO> getChats(@AuthenticationPrincipal User user){
-        Set<Chat> chats = chatService.getChatsByUser(user);
-        if(chats == null) chats = new HashSet<>();
+    public ResponseEntity<List<ChatDTO>> getChats(@AuthenticationPrincipal User user){
+        Set<Chat> chats = user.getChats();
+        List<ChatDTO> response = new ArrayList<>();
+        for(var chat:chats){
+            response.add(new ChatDTO(chat));
+        }
 
-        return new ResponseEntity<>(ResponseWithDTO.create(dtoFactory.ChatsToDtoList(chats), "Chats successfully found"), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -1,17 +1,19 @@
 package com.actiongroup.actionserver.controllers.users;
 
-import com.actiongroup.actionserver.models.archives.ImageArchive;
 
+import com.actiongroup.actionserver.models.archives.*;
 import com.actiongroup.actionserver.models.dto.*;
+import com.actiongroup.actionserver.models.events.Event;
 import com.actiongroup.actionserver.models.users.User;
-import com.actiongroup.actionserver.services.archives.AudioArchiveService;
-import com.actiongroup.actionserver.services.archives.ImageArchiveService;
-import com.actiongroup.actionserver.services.archives.VideoArchiveService;
+import com.actiongroup.actionserver.services.archives.media.ImageService;
+import com.actiongroup.actionserver.services.events.EventService;
+import com.actiongroup.actionserver.services.users.RelationshipService;
 import com.actiongroup.actionserver.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,126 +21,134 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
 @Tag(name = "Users API")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
 
-    private UserService userService;
-    private VideoArchiveService videoArchiveService;
-    private AudioArchiveService audioArchiveService;
-    private ImageArchiveService imageArchiveService;
-
-    private DTOFactory dtoFactory;
-
-    @Autowired
-    public UserController(UserService userService, DTOFactory dtoFactory) {
-        this.userService = userService;
-        this.dtoFactory = dtoFactory;
-    }
+    private final UserService userService;
+    private final ImageService imageService;
+    private final RelationshipService relationshipService;
 
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/edit")
     //TODO write descriptions on english
     @Operation(summary = "Edit authenticated user", description = "Обновляет все поля у пользоваетля")
-    public ResponseEntity<ResponseWithDTO> editUser(@RequestBody UserFullDTO userdto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<String> editUser(@RequestBody UserDTO userdto, @AuthenticationPrincipal User user) {
         User userWithSameUsername = userService.findByUsername(userdto.getUsername());
         User userWithSameEmail = userService.findByEmail(userdto.getEmail());
-        //Just for fun?.. (I don't understand why ObjectWithCopyableFields can't access to id of User anyway)
-        if (userdto.getId() != user.getId()) {
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "Don't send id here"), HttpStatus.BAD_REQUEST);
-        }
         if (userWithSameUsername != null && !userWithSameUsername.getId().equals(user.getId()))
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "User with this username already exists"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User with this username already exists", HttpStatus.BAD_REQUEST);
         if (userWithSameEmail != null && !userWithSameEmail.getId().equals(user.getId()))
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "User with this email already exists"), HttpStatus.BAD_REQUEST);
-        //Some piece of cringe
-        userdto.copyFieldsTo(user);
+            return new ResponseEntity<>("User with this email already exists", HttpStatus.BAD_REQUEST);
+
+        if (userdto.getUsername() != null) user.setUsername(userdto.getUsername());
+        if (userdto.getEmail() != null) user.setEmail(userdto.getEmail());
+        if (userdto.getFirstname() != null) user.setFirstname(userdto.getFirstname());
+        if (userdto.getLastname() != null) user.setLastname(userdto.getLastname());
+        if (userdto.getPhoneNumber() != null) user.setPhoneNumber(userdto.getPhoneNumber());
+        if (userdto.getBirthDate() != null) user.setBirthDate(userdto.getBirthDate());
+        if (userdto.getIconId() != -1) user.setIconImage(imageService.findById(userdto.getIconId()));
+        //TODO add edit for settings and password
         userService.save(user);
 
-        return new ResponseEntity<>(
-                ResponseWithDTO.create(
-                        dtoFactory.UserToDto(user, DTOFactory.UserDTOSettings.Simple),
-                        "user successfully edited"), HttpStatus.OK);
+        return new ResponseEntity<>("Success:User edited successfully", HttpStatus.OK);
     }
 
-
-    @GetMapping("/get/{id}")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user successfully found"),
-            @ApiResponse(responseCode = "400", description = "User was not found")
-    })
-    @Operation(summary = "Get user by id", description = "Возвращает короткое описание пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUser(
-            @PathVariable Long id) {
-        return getUserResponse(userService.findById(id), DTOFactory.UserDTOSettings.Simple);
+    @GetMapping("/get-events/{id}")
+    public ResponseEntity<List<EventDTO>> getAllEventsByUserId(@PathVariable("id") Long id) {
+        List<EventDTO> response = new ArrayList<>();
+        User user = userService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        for (EventsArchive eventsArchive : user.getEventsArchives()) {
+            for (Event event : eventsArchive.getEvents()) {
+                response.add(new EventDTO(event));
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/get-full/{id}")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user successfully found"),
-            @ApiResponse(responseCode = "400", description = "User was not found")
-    })
-    @Operation(summary = "Get user by id", description = "Возвращает пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> getUserFull(
-            @PathVariable Long id) {
-        return getUserResponse(userService.findById(id), DTOFactory.UserDTOSettings.Large);
+    @GetMapping("/get-archives/{id}")
+    public ResponseEntity<List<ArchiveDTO>> getAllArchivesByUserId(@PathVariable("id") Long id) {
+        List<ArchiveDTO> response = new ArrayList<>();
+        User user = userService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        for (EventsArchive archive : user.getEventsArchives()) {
+            response.add(new ArchiveDTO(archive, false));
+        }
+        for (ImageArchive archive : user.getImageArchives()) {
+            response.add(new ArchiveDTO(archive, false));
+        }
+        for (AudioArchive archive : user.getAudioArchives()) {
+            response.add(new ArchiveDTO(archive, false));
+        }
+        for (VideoArchive archive : user.getVideoArchives()) {
+            response.add(new ArchiveDTO(archive, false));
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-info/{id}")
+    public ResponseEntity<UserDTO> getInfoByUserId(@PathVariable("id") Long id) {
+        User user = userService.findById(id);
+        return new ResponseEntity<>(new UserDTO(user, true),HttpStatus.OK );
+    }
+
+    @GetMapping("/get-contacts/{id}")
+    public ResponseEntity<ContactsDTO> getContactsByUserId(@PathVariable("id") Long id){
+        User user = userService.findById(id);
+        if(user == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        List<UserDTO> subscriptions = new ArrayList<>();
+        for(User sub : relationshipService.getSubscriptions(user)){
+            subscriptions.add(new UserDTO(sub, false));
+        }
+        List<UserDTO> subscribers = new ArrayList<>();
+        for(User sub : relationshipService.getSubscribers(user)){
+            subscribers.add(new UserDTO(sub, false));
+        }
+        List<UserDTO> friends = new ArrayList<>();
+        for(User friend : relationshipService.getFriends(user)){
+            friends.add(new UserDTO(friend, false));
+        }
+        return new ResponseEntity<>(new ContactsDTO(subscriptions, subscribers, friends), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me-full")
-    public ResponseEntity<ResponseWithDTO> getAuthenticatedUserFull(
-            @AuthenticationPrincipal User user) {
-        return getUserResponse(user, DTOFactory.UserDTOSettings.Large);
-    }
-
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me-full")
-    public ResponseEntity<ResponseWithDTO> getAuthenticatedUser(
-            @AuthenticationPrincipal User user) {
-        return getUserResponse(user, DTOFactory.UserDTOSettings.Simple);
-    }
-
-    public ResponseEntity<ResponseWithDTO> getUserResponse(User user, DTOFactory.UserDTOSettings settings) {
-        if (user == null)
-            return new ResponseEntity<>(ResponseWithDTO.create(null, "user not found"), HttpStatus.BAD_REQUEST);
-
-
-        return new ResponseEntity<>(
-                ResponseWithDTO.create(
-                        dtoFactory.UserToDto(user, settings),
-                        "user successfully found"),
-                HttpStatus.OK);
-    }
-
-    //TODO need in tests
-    @GetMapping("/search")
-    @Operation(summary = "Get list of users by part of username", description = "")
-    public ResponseEntity<ResponseWithDTO> getUsers(@RequestParam("username") String username) {
-        List<User> users = userService.findByUsernameContaining(username);
-        return new ResponseEntity<>(ResponseWithDTO.create(UsersDTO.toDTO(users), "Users successfully found"), HttpStatus.OK);
+    @GetMapping("/get-blocked-contacts")
+    public ResponseEntity<List<UserDTO>> getBlockedContacts(@AuthenticationPrincipal User user) {
+        List<UserDTO> blocked = new ArrayList<>();
+        for (User blockedUser : relationshipService.getBlacklist(user)) {
+            blocked.add(new UserDTO(blockedUser, false));
+        }
+        return new ResponseEntity<>(blocked, HttpStatus.OK);
     }
 
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/me")
     @Operation(summary = "Delete authenticated user", description = "")
-    public ResponseEntity<ResponseWithDTO> deleteUser(@AuthenticationPrincipal User user) {
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal User user) {
         userService.deleteUser(user);
-        return new ResponseEntity<>(ResponseWithDTO.create(null, "User successfully deleted"), HttpStatus.OK);
+        return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete user by id", description = "Удаляет пользователя по его ID")
-    public ResponseEntity<ResponseWithDTO> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         User user = userService.findById(id);
         userService.deleteUser(user);
-        return new ResponseEntity<>(ResponseWithDTO.create(null, "User successfully deleted"), HttpStatus.OK);
+        return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
     }
-
-
 }

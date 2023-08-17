@@ -40,7 +40,7 @@ public class MediaService {
         String ext;
         switch (type) {
             case IMAGE -> ext = ".jpg";
-            case MUSIC -> ext = ".mp3";
+            case AUDIO -> ext = ".mp3";
             case VIDEO -> ext = ".mp4";
             default -> ext = ".txt";
         }
